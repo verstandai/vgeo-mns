@@ -1,0 +1,124 @@
+/* Main Background */
+.stApp {
+    background-color: #0e1117;
+    color: #fafafa;
+}
+
+/* Card Container */
+.news-card {
+    background-color: #1e2130;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #2b3144;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Header Row */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Date Styling */
+.news-date {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* Ticker Badge */
+.ticker-badge {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Headlines */
+.news-headline {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Source Info */
+.news-source {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    margin-left: 5px;
+}
+
+.badge-significant {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-insignificant {
+    background-color: #6c757d;
+    color: white;
+}
+
+.badge-positive {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-negative {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Metrics */
+.metric-label {
+    font-size: 0.8rem;
+    color: #a0a0a0;
+}
+
+.metric-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.metric-positive {
+    color: #4cd964;
+}
+
+.metric-negative {
+    color: #ff3b30;
+}
+
+/* Neutralize Multiselect Tags */
+span[data-baseweb="tag"] {
+    background-color: #2b3144 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
