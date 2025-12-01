@@ -166,6 +166,7 @@ def render_news_card(index, row, manager):
                     <div class="header-left">
                         <span class="news-date">{display_date}</span>
                         <span class="ticker-badge">{row['us_ticker_name']}</span>
+                        <span class="company-name">{row.get('company_name', '')}</span>
                     </div>
                     <div>
                         <span class="badge {sentiment_color}">{row['news_sentiment']}</span>

@@ -46,6 +46,14 @@
     font-size: 0.9rem;
 }
 
+/* Company Name */
+.company-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #b0b0b0;
+    margin-left: 5px;
+}
+
 /* Headlines */
 .news-headline {
     font-size: 1.3rem;
