@@ -98,10 +98,7 @@ def render_sidebar(df, manager):
             sel_date = datetime.strptime(selected_date_option, '%Y-%m-%d').date()
             view_df = ticker_df[ticker_df['parsed_date'] == sel_date]
 
-    # Significance Filter
-    show_only_significant = st.sidebar.checkbox("Show Only Significant Events", value=False)
-    if show_only_significant:
-        view_df = view_df[view_df['classification'] == 'SIGNIFICANT']
+    st.sidebar.markdown("---")
 
     # Sentiment Filter
     all_sentiments = sorted(df['news_sentiment'].unique().tolist())
@@ -115,6 +112,13 @@ def render_sidebar(df, manager):
     selected_correlations = st.sidebar.multiselect("Filter by Event Correlation", all_correlations, default=[])
     if selected_correlations:
         view_df = view_df[view_df['event_correlation'].isin(selected_correlations)]
+
+    st.sidebar.markdown("---")
+
+    # Significance Filter
+    show_only_significant = st.sidebar.checkbox("Show Only Significant Events", value=False)
+    if show_only_significant:
+        view_df = view_df[view_df['classification'] == 'SIGNIFICANT']
 
     # Duplicate Filter
     hide_duplicates = st.sidebar.checkbox("Hide User-Flagged Duplicates", value=True)
@@ -209,70 +213,68 @@ def render_news_card(index, row, manager):
             else:
                 st.info("Market data unavailable for this date.")
 
-        st.markdown("---")
-        st.markdown("#### Model Validation")
-        
-        # Dynamic Feedback (No Form to allow interactivity)
-        # Use columns for better layout
-        f1, f2 = st.columns(2)
-        
-        with f1:
-            # Sentiment Validation
-            st.caption(f"Model Sentiment: **{row['news_sentiment']}**")
-            sent_correct = st.radio("Is Sentiment Correct?", ["Yes", "No"], horizontal=True, key=f"sent_check_{index}")
+        with st.expander("Model Validation", expanded=False):
+            # Dynamic Feedback (No Form to allow interactivity)
+            # Use columns for better layout
+            f1, f2 = st.columns(2)
             
-            final_sentiment = row['news_sentiment']
-            if sent_correct == "No":
-                final_sentiment = st.selectbox("Select Correct Sentiment", ["POSITIVE", "NEUTRAL", "NEGATIVE"], key=f"sent_fix_{index}")
-        
-        with f2:
-            # Event Correlation (Moved Up)
-            st.caption("Event Correlation")
-            corr_correct = st.radio("Is Event Correlation Correct?", ["Yes", "No"], horizontal=True, key=f"corr_check_{index}")
+            with f1:
+                # Sentiment Validation
+                st.caption(f"Model Sentiment: **{row['news_sentiment']}**")
+                sent_correct = st.radio("Is Sentiment Correct?", ["Yes", "No"], horizontal=True, key=f"sent_check_{index}")
+                
+                final_sentiment = row['news_sentiment']
+                if sent_correct == "No":
+                    final_sentiment = st.selectbox("Select Correct Sentiment", ["POSITIVE", "NEUTRAL", "NEGATIVE"], key=f"sent_fix_{index}")
             
-            final_corr = "Correct"
-            if corr_correct == "No":
-                final_corr = st.selectbox("Select Correct Correlation", ["Strong", "Medium", "Weak"], key=f"corr_fix_{index}")
+            with f2:
+                # Event Correlation (Moved Up)
+                st.caption("Event Correlation")
+                corr_correct = st.radio("Is Event Correlation Correct?", ["Yes", "No"], horizontal=True, key=f"corr_check_{index}")
+                
+                final_corr = "Correct"
+                if corr_correct == "No":
+                    final_corr = st.selectbox("Select Correct Correlation", ["Strong", "Medium", "Weak"], key=f"corr_fix_{index}")
 
-        # Row 2: Source & Significance Validation
-        f3, f4 = st.columns(2)
-        
-        with f3:
-            # Source Utility
-            st.caption("Source Quality")
-            source_useful = st.radio("Is Source/Reporter Useful?", ["Yes", "No"], horizontal=True, key=f"src_check_{index}")
-
-        with f4:
-            # Significance Validation (Moved Down)
-            st.caption(f"Model Significance: **{row['classification']}**")
-            sig_correct = st.radio("Is Significance Correct?", ["Yes", "No"], horizontal=True, key=f"sig_check_{index}")
+            # Row 2: Source & Significance Validation
+            f3, f4 = st.columns(2)
             
-            final_sig = row['classification']
-            if sig_correct == "No":
-                # Mapping HIGH/LOW to internal values if needed, or just using them directly
-                # Assuming HIGH = SIGNIFICANT, LOW = INSIGNIFICANT for consistency with data
-                sig_option = st.selectbox("Select Correct Significance", ["HIGH", "LOW"], key=f"sig_fix_{index}")
-                final_sig = "SIGNIFICANT" if sig_option == "HIGH" else "INSIGNIFICANT"
+            with f3:
+                # Source Utility
+                st.caption("Source Quality")
+                source_useful = st.radio("Is Source/Reporter Useful?", ["Yes", "No"], horizontal=True, key=f"src_check_{index}")
 
-        st.caption("Additional Feedback")
-        f_dup = st.checkbox("Mark as Duplicate", key=f"dup_{index}")
-        f_notes = st.text_area("Notes", placeholder="Reasoning for correction...", height=80, key=f"note_{index}")
-        
-        if st.button("Submit Feedback", key=f"btn_{index}"):
-            feedback_entry = {
-                "news_id": index,
-                "ticker": row['us_ticker_name'],
-                "date": row['date'],
-                "headline": row['headline'],
-                "user_sentiment_correction": final_sentiment if sent_correct == "No" else "Correct",
-                "user_significance_correction": final_sig if sig_correct == "No" else "Correct",
-                "source_useful": source_useful,
-                "event_correlation_correction": final_corr,
-                "is_duplicate": f_dup,
-                "notes": f_notes
-            }
-            manager.save_feedback(feedback_entry)
-            st.success("Saved!")
+            with f4:
+                # Significance Validation (Moved Down)
+                st.caption(f"Model Significance: **{row['classification']}**")
+                sig_correct = st.radio("Is Significance Correct?", ["Yes", "No"], horizontal=True, key=f"sig_check_{index}")
+                
+                final_sig = row['classification']
+                if sig_correct == "No":
+                    # Mapping HIGH/LOW to internal values if needed, or just using them directly
+                    # Assuming HIGH = SIGNIFICANT, LOW = INSIGNIFICANT for consistency with data
+                    sig_option = st.selectbox("Select Correct Significance", ["HIGH", "LOW"], key=f"sig_fix_{index}")
+                    final_sig = "SIGNIFICANT" if sig_option == "HIGH" else "INSIGNIFICANT"
+
+            st.caption("Additional Feedback")
+            f_dup = st.checkbox("Mark as Duplicate", key=f"dup_{index}")
+            f_notes = st.text_area("Notes", placeholder="Reasoning for correction...", height=80, key=f"note_{index}")
+            
+            if st.button("Submit Feedback", key=f"btn_{index}"):
+                feedback_entry = {
+                    "news_id": index,
+                    "ticker": row['us_ticker_name'],
+                    "date": row['date'],
+                    "headline": row['headline'],
+                    "user_sentiment_correction": final_sentiment if sent_correct == "No" else "Correct",
+                    "user_significance_correction": final_sig if sig_correct == "No" else "Correct",
+                    "source_useful": source_useful,
+                    "event_correlation_correction": final_corr,
+                    "is_duplicate": f_dup,
+                    "notes": f_notes
+                }
+                manager.save_feedback(feedback_entry)
+                st.success("Saved!")
 
         with st.expander("Show Source Details"):
             st.markdown(f"**Original Headline:** {row['original_headline']}")
