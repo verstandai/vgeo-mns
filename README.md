@@ -1,53 +1,75 @@
-# AlphaStream - Sentiment Analysis & Validation Tool
+# MNS News Analysis Dashboard
 
-This project is a Streamlit-based dashboard designed to validate financial news sentiment analysis models. It allows analysts to review news events, visualize market impact, and provide structured feedback to retrain the underlying models.
+A Streamlit-based dashboard for analyzing and validating financial news sentiment, significance, and market impact. This tool allows analysts to review model outputs, validate predictions against market data, and provide feedback for model improvement.
+
+## Key Features
+
+### 🔍 Discovery & Filtering
+*   **Global Search:** Instantly search across headlines, reasoning, key factors, and tickers.
+*   **Advanced Filters:** Filter by Ticker, Date Range, Sentiment, Significance, and Event Correlation tags.
+*   **Favorites:** "Star" interesting news items to save them to a personal watchlist.
+
+### 📊 Market Impact Analysis
+*   **Real-Time Data:** Fetches market data using `yfinance` to show price movements on the day of the event.
+*   **Key Metrics:**
+    *   **Stock Chg:** % Change on the day.
+    *   **Index Chg:** % Change of the benchmark index (TOPIX/ETF).
+    *   **Rel Change:** Stock performance relative to the index.
+    *   **Vol Ratio:** Volume relative to the 30-day average.
+
+### 📝 Feedback Loop & Validation
+*   **Model Validation:** Interactive form to validate:
+    *   **Sentiment:** Correct/Incorrect (with correction dropdown).
+    *   **Significance:** High/Low.
+    *   **Source Quality:** Is the reporter useful?
+    *   **Event Correlation:** Strength of the event link.
+*   **Data Persistence:** Feedback is saved locally to `feedback_log.csv` and Favorites to `favorites.json`.
 
 ## Project Structure
 
-```text
+```
 vgeo-mns/
-├── mns_demo_output.csv       # Source Data: The demo dataset containing news and sentiment scores.
-├── README.md                 # Project documentation.
-└── streamlit_app/            # The main application directory.
-    ├── app.py                # Entry Point: The main Streamlit application script.
-    ├── data_manager.py       # Data Layer: Handles loading CSVs, fetching market data (yfinance), and saving feedback.
-    ├── requirements.txt      # Dependencies: Python packages required to run the app.
-    ├── run_app.sh            # Helper Script: A shell script to install dependencies and run the app.
-    ├── assets/               # Static Assets
-    │   └── style.css         # Styling: Custom CSS for the "Financial Terminal" dark mode look.
-    ├── .streamlit/           # Configuration: Streamlit-specific config folder (e.g., for themes).
-    └── feedback_log.csv      # Output: Generated automatically to store user feedback.
+├── mns_demo_output.csv       # Source data (News events)
+├── streamlit_app/
+│   ├── app.py                # Main application logic
+│   ├── data_manager.py       # Data loading, market data fetching, persistence
+│   ├── requirements.txt      # Python dependencies
+│   ├── run_app.sh            # Helper script to launch the app
+│   ├── favorites.json        # Stores user favorites (auto-generated)
+│   ├── feedback_log.csv      # Stores user feedback (auto-generated)
+│   └── assets/
+│       └── style.css         # Custom dark theme styling
+└── README.md                 # This file
 ```
 
-## Key Components
+## Setup & Running Locally
 
-*   **`app.py`**: The UI layer. It handles the layout, filters (Sidebar), and the rendering of news cards. It uses `data_manager.py` to fetch data.
-*   **`data_manager.py`**: The logic layer.
-    *   **`load_data()`**: Reads and cleans `mns_demo_output.csv`.
-    *   **`get_market_data()`**: Fetches real-time or mock market data (Price, Volume, Index comparison) using `yfinance`.
-    *   **`save_feedback()`**: Appends analyst inputs to `feedback_log.csv`.
-*   **`mns_demo_output.csv`**: The input file. Contains columns like `headline`, `news_sentiment`, `classification`, `reasoning`, etc.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/verstandai/vgeo-mns.git
+    cd vgeo-mns
+    ```
 
-## How to Run
-
-1.  Navigate to the app directory:
+2.  **Run the App:**
+    You can use the helper script:
     ```bash
     cd streamlit_app
-    ```
-
-2.  Run the helper script (installs requirements and launches app):
-    ```bash
     ./run_app.sh
     ```
-
-    *Alternatively, run manually:*
+    Or run manually:
     ```bash
-    pip install -r requirements.txt
-    streamlit run app.py
+    pip install -r streamlit_app/requirements.txt
+    streamlit run streamlit_app/app.py
     ```
 
-## Features
+## Deployment
 
-*   **Sentiment & Significance Badges**: Quick visual indicators for model outputs.
-*   **Market Impact Analysis**: Visualizes stock price change relative to the index and volume anomalies.
-*   **Analyst Feedback Loop**: A form to correct sentiment, flag duplicates, and provide strategy notes for model retraining.
+This app is ready for deployment on **Streamlit Community Cloud**.
+
+1.  Push your code to GitHub.
+2.  Go to [share.streamlit.io](https://share.streamlit.io).
+3.  Deploy a new app pointing to your repository.
+4.  **Main file path:** `streamlit_app/app.py`
+
+**Note on Persistence:**
+In the "Quick & Dirty" deployment mode, `favorites.json` and `feedback_log.csv` are ephemeral and will reset when the app restarts. For production use, integrate with Google Sheets or a database.
