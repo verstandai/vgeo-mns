@@ -20,15 +20,21 @@ st.set_page_config(
 )
 
 # --- Helper Functions ---
-def load_css(file_path="assets/style.css"):
-    """Loads custom CSS styles."""
-    with open(file_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+def load_css():
+    """Loads the custom CSS."""
+    css_path = os.path.join(os.path.dirname(__file__), 'assets', 'style.css')
+    with open(css_path) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 @st.cache_resource
 def get_manager():
-    """Initializes the DataManager singleton."""
-    return DataManager(DATA_PATH, FEEDBACK_PATH)
+    """Initializes and caches the DataManager."""
+    # Construct absolute paths
+    base_dir = os.path.dirname(__file__)
+    data_path = os.path.join(base_dir, "..", "mns_demo_output.csv")
+    feedback_path = os.path.join(base_dir, "feedback_log.csv")
+    
+    return DataManager(data_path, feedback_path)
 
 def get_metric_color(val):
     """Returns CSS class for metric coloring."""
