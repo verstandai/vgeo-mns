@@ -85,18 +85,45 @@ def render_sidebar(df, manager):
     view_df = ticker_df
 
     if dates:
-        date_options = ["Last 5 Days", "All History"] + [d.strftime('%Y-%m-%d') for d in dates]
-        selected_date_option = st.sidebar.selectbox("Select Date Range", date_options, index=0)
+        min_date = dates[-1]
+        max_date = dates[0]
         
-        if selected_date_option == "All History":
+        date_mode = st.sidebar.selectbox(
+            "Date Filter Mode", 
+            ["Last 5 Days", "All History", "Specific Date", "Date Range"],
+            index=0
+        )
+        
+        if date_mode == "All History":
             view_df = ticker_df
-        elif selected_date_option == "Last 5 Days":
-            max_date = dates[0]
+        elif date_mode == "Last 5 Days":
             cutoff = max_date - timedelta(days=5)
             view_df = ticker_df[ticker_df['parsed_date'] >= cutoff]
-        else:
-            sel_date = datetime.strptime(selected_date_option, '%Y-%m-%d').date()
+        elif date_mode == "Specific Date":
+            sel_date = st.sidebar.date_input(
+                "Select Date", 
+                value=max_date, 
+                min_value=min_date, 
+                max_value=max_date
+            )
             view_df = ticker_df[ticker_df['parsed_date'] == sel_date]
+        elif date_mode == "Date Range":
+            # Default to last 7 days for the range view
+            default_start = max_date - timedelta(days=7)
+            sel_range = st.sidebar.date_input(
+                "Select Range",
+                value=(default_start, max_date),
+                min_value=min_date,
+                max_value=max_date
+            )
+            # st.date_input returns a tuple. It might be length 1 if user is still selecting.
+            if isinstance(sel_range, tuple) and len(sel_range) == 2:
+                start_d, end_d = sel_range
+                view_df = ticker_df[(ticker_df['parsed_date'] >= start_d) & (ticker_df['parsed_date'] <= end_d)]
+            elif isinstance(sel_range, tuple) and len(sel_range) == 1:
+                 # Handle case where user picked start date but not end date yet
+                 start_d = sel_range[0]
+                 view_df = ticker_df[ticker_df['parsed_date'] >= start_d]
 
     st.sidebar.markdown("---")
 
