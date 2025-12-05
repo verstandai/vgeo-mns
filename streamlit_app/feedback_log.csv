@@ -1,2 +1,2 @@
-news_id,ticker,date,headline,user_sentiment_correction,user_significance_correction,source_useful,event_correlation_correction,is_duplicate,notes,timestamp
-0,PCRHY,10/31/25,"[Analyst Rating] Panasonic H, maintain strong rating, target price raised to 2,700 yen (Major European brokerage)",POSITIVE,Correct,Yes,Medium,False,,2025-12-04T04:09:01.509729
+news_id,ticker,date,headline,user_sentiment_correction,user_significance_correction,source_useful,event_correlation_correction,is_duplicate,is_recap,notes,timestamp
+15,RNECY,10/30/25,"[Earnings Flash Report] Renesas Elec: 3Q cumulative pre-tax -49,243 million.",Correct,Correct,Yes,Correct,False,True,,2025-12-05T12:37:37.395272

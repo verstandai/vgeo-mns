@@ -313,6 +313,7 @@ def render_news_card(index, row, manager):
 
             st.caption("Additional Feedback")
             f_dup = st.checkbox("Mark as Duplicate", key=f"dup_{index}")
+            f_recap = st.checkbox("Mark as Recap", key=f"recap_{index}")
             f_notes = st.text_area("Notes", placeholder="Reasoning for correction...", height=80, key=f"note_{index}")
             
             if st.button("Submit Feedback", key=f"btn_{index}"):
@@ -326,6 +327,7 @@ def render_news_card(index, row, manager):
                     "source_useful": source_useful,
                     "event_correlation_correction": final_corr,
                     "is_duplicate": f_dup,
+                    "is_recap": f_recap,
                     "notes": f_notes
                 }
                 manager.save_feedback(feedback_entry)
