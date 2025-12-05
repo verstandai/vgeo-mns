@@ -30,6 +30,10 @@ class DataManager:
         if mask.any():
             df.loc[mask, 'parsed_date'] = pd.to_datetime(df.loc[mask, 'date'], errors='coerce').dt.date
 
+        # Sort by Date (Desc)
+        if 'parsed_date' in df.columns:
+            df = df.sort_values(by=['parsed_date'], ascending=False)
+
         return df
 
     def load_favorites(self):

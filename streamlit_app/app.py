@@ -8,7 +8,7 @@ from data_manager import DataManager
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
 PAGE_ICON = "📈"
-DATA_PATH = "../mns_demo_output.csv"
+DATA_PATH = "../mns_demo_enriched.csv"
 FEEDBACK_PATH = "feedback_log.csv"
 
 # --- Setup ---
@@ -31,7 +31,7 @@ def get_manager():
     """Initializes and caches the DataManager."""
     # Construct absolute paths
     base_dir = os.path.dirname(__file__)
-    data_path = os.path.join(base_dir, "..", "mns_demo_output.csv")
+    data_path = os.path.join(base_dir, "..", "mns_demo_enriched.csv")
     feedback_path = os.path.join(base_dir, "feedback_log.csv")
     
     return DataManager(data_path, feedback_path)
@@ -46,7 +46,7 @@ def render_sidebar(df, manager):
     st.sidebar.markdown("---")
 
     if df.empty:
-        st.error("No data found. Please ensure mns_demo_output.csv is in the parent directory.")
+        st.error("No data found. Please ensure mns_demo_enriched.csv is in the parent directory.")
         st.stop()
 
     # --- Global Search ---
@@ -90,7 +90,7 @@ def render_sidebar(df, manager):
         
         date_mode = st.sidebar.selectbox(
             "Date Filter Mode", 
-            ["Last 5 Days", "All History", "Specific Date", "Date Range"],
+            ["All History", "Last 5 Days", "Specific Date", "Date Range"],
             index=0
         )
         
@@ -142,8 +142,13 @@ def render_sidebar(df, manager):
 
     st.sidebar.markdown("---")
 
+    # Breaking/Recap Filter
+    show_only_breaking = st.sidebar.checkbox("Show Only Breaking Events", value=True)
+    if show_only_breaking:
+        view_df = view_df[view_df['breaking_recap'] == 'Breaking']
+
     # Significance Filter
-    show_only_significant = st.sidebar.checkbox("Show Only Significant Events", value=False)
+    show_only_significant = st.sidebar.checkbox("Show Only Significant Events", value=True)
     if show_only_significant:
         view_df = view_df[view_df['classification'] == 'SIGNIFICANT']
 
@@ -176,9 +181,10 @@ def render_news_card(index, row, manager):
         index_name=row.get('index')
     )
     
-    sentiment_color = "badge-positive" if row['news_sentiment'] == 'POSITIVE' else "badge-negative" if row['news_sentiment'] == 'NEGATIVE' else "badge-insignificant"
+    sentiment_color = "badge-positive" if abs(row['news_sentiment']) > 0.5 else "badge-negative" if abs(row['news_sentiment']) < 0.5 else "badge-insignificant"
     sig_badge = "badge-significant" if row['classification'] == 'SIGNIFICANT' else "badge-insignificant"
-    
+    recap_badge = "badge-significant" if row['breaking_recap'] == 'Breaking' else "badge-insignificant" if row['breaking_recap'] == 'Recap' else "badge-insignificant"
+
     # Format Date
     display_date = row['parsed_date'].strftime('%b %d, %Y').upper() if row['parsed_date'] else row['date']
 
@@ -191,6 +197,11 @@ def render_news_card(index, row, manager):
         # Header Row with Favorite Button
         c_head, c_fav = st.columns([8, 1])
         with c_head:
+            # Determine badges
+            category_badge = f'<span class="badge badge-insignificant">{row.get("event_category", "Unknown")}</span>'
+            recap_badge = f'<span class="badge {recap_badge}">{row.get("breaking_recap", "Unknown")}</span>'
+            sig_badge = f'<span class="badge {sig_badge}">{row.get("classification", "Unknown")}</span>'
+
             st.markdown(f"""
             <div class="news-card">
                 <div class="card-header">
@@ -200,8 +211,9 @@ def render_news_card(index, row, manager):
                         <span class="company-name">{row.get('company_name', '')}</span>
                     </div>
                     <div>
-                        <span class="badge {sentiment_color}">{row['news_sentiment']}</span>
-                        <span class="badge {sig_badge}">{row['classification']}</span>
+                        {category_badge}
+                        {recap_badge}
+                        {sig_badge}
                     </div>
                 </div>
                 <div class="news-headline">{row['headline']}</div>
@@ -219,10 +231,24 @@ def render_news_card(index, row, manager):
         
         with c1:
             st.markdown("#### Analysis")
+            if pd.notna(row.get('description')):
+                st.markdown(f"**Description:** {row['description']}")
             st.markdown(f"**Reasoning:** {row['reasoning']}")
             st.markdown(f"**Key Factors:** {row['key_factors']}")
             
         with c2:
+                        
+            st.markdown("#### Event Classification")
+            e1, e2 = st.columns(2)
+            with e1:
+                st.markdown(f"<div class='metric-label'>Category</div><div class='metric-value-small'>{row.get('event_category', 'N/A')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                st.markdown(f"<div class='metric-label'>Correlation</div><div class='metric-value-small'>{row.get('event_correlation', 'N/A')}</div>", unsafe_allow_html=True)
+            with e2:
+                st.markdown(f"<div class='metric-label'>Sentiment</div><div class='metric-value-small'>{row.get('news_sentiment', 0):.2f}</div>", unsafe_allow_html=True)
+                
+            st.markdown("")
+                
             st.markdown("#### Market Impact (Day of Event)")
             if market_data:
                 # Row 1: Stock & Index Change
@@ -239,6 +265,8 @@ def render_news_card(index, row, manager):
                     st.caption("⚠️ Market data simulated")
             else:
                 st.info("Market data unavailable for this date.")
+            st.markdown("") 
+
 
         with st.expander("Model Validation", expanded=False):
             # Dynamic Feedback (No Form to allow interactivity)
