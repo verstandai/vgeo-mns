@@ -359,7 +359,7 @@ def render_news_card(index, row, manager):
                 with m4:
                     stock_intra = market_data.get('intraday_change', 0)
                     rel_intra = market_data.get('relative_intraday', 0)
-                    st.markdown(f"<div class='metric-label'>Intraday (Stock/Rel)</div><div class='metric-value-small'>{delta_span(stock_intra)} / {delta_span(rel_intra)}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='metric-label'>Intraday (Stock/Idx)</div><div class='metric-value-small'>{delta_span(stock_intra)} / {delta_span(rel_intra)}</div>", unsafe_allow_html=True)
                 with m5:
                     sigma = market_data.get('sigma_move', 0)
                     sigma_color = "metric-positive" if sigma > 0 else "metric-negative"
