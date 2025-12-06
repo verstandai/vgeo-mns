@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import os
 import html
+import altair as alt
 from datetime import datetime, timedelta
 from data_manager import DataManager
 
@@ -187,12 +188,13 @@ def render_metrics(view_df):
 
 def render_news_card(index, row, manager):
     """Renders a single news card with details and feedback form."""
-    # Pass local ticker and index name for accurate data fetching
+    # Pass local ticker and index name    # Fetch Market Data (if available)
     market_data = manager.get_market_data(
         row['us_ticker_name'], 
-        row['parsed_date'], 
-        local_ticker=row.get('local_ticker_name'), 
-        index_name=row.get('index')
+        row['parsed_date'],
+        local_ticker=row.get('local_ticker_name'),
+        index_name=row.get('index'),
+        sentiment_score=row.get('news_sentiment')
     )
     
     # Determine Sentiment Badge
@@ -204,7 +206,12 @@ def render_news_card(index, row, manager):
     else:
         sentiment_color = "badge-insignificant"
 
-    corr_cat = row.get('event_correlation', 'N/A')
+    # Use calculated impact strength if available, otherwise fallback to LLM's correlation
+    if market_data and 'impact_strength' in market_data:
+        corr_cat = market_data['impact_strength']
+    else:
+        corr_cat = row.get('event_correlation', 'N/A')
+
     if corr_cat == 'Strong':
         corr_color = "badge-strong"
     elif corr_cat == 'Medium':
@@ -218,7 +225,7 @@ def render_news_card(index, row, manager):
     recap_badge = "badge-breaking" if row['breaking_recap'] == 'Breaking' else "badge-insignificant" if row['breaking_recap'] == 'Recap' else "badge-insignificant"
 
     # Format Date
-    display_date = row['parsed_date'].strftime('%b %d, %Y').upper() if row['parsed_date'] else row['date']
+    display_date = row['parsed_date'].strftime('%B %d, %Y') if row['parsed_date'] else row['date']
 
     # Favorite Logic
     is_fav = manager.is_favorite(index)
@@ -284,27 +291,152 @@ def render_news_card(index, row, manager):
 
 
             with e2:
-                st.markdown(f"<div class='metric-label'>Correlation</div><span class=\"badge {corr_color}\" style='margin-left: 0;'>{corr_cat.upper()}</span>", unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-label'>Event to Market Impact</div><span class=\"badge {corr_color}\" style='margin-left: 0;'>{corr_cat.upper()}</span>", unsafe_allow_html=True)
+                
+                if market_data and 'sentiment_alignment' in market_data:
+                    align_status = market_data['sentiment_alignment']
+                    align_color = "#4cd964" if align_status == "Aligned" else "#ff3b30" if align_status == "Diverged" else "#a0a0a0"
+                    st.markdown("")
+                    st.markdown(f"<div class='metric-label'>Alignment</div><div class='metric-value-small' style='color: {align_color};'>{align_status}</div>", unsafe_allow_html=True)
 
             st.markdown('<div style="border-top: 1px solid #444; margin: 15px 0;"></div>', unsafe_allow_html=True)
             st.markdown("#### Market Impact (Day of Event)")
             if market_data:
+                # Helper for delta color
+                def delta_span(val):
+                    color = "metric-positive" if val > 0 else "metric-negative" if val < 0 else ""
+                    arrow = "↑" if val > 0 else "↓" if val < 0 else ""
+                    return f"<span class='{color}' style='font-size: 0.85em; margin-left: 4px;'>{arrow} {abs(val):.2f}%</span>"
+
                 # Row 1: Stock & Index Change
-                m1, m2 = st.columns(2)
-                m1.markdown(f"<div class='metric-label'>Stock Chg</div><div class='metric-value {get_metric_color(market_data.get('pct_change_day', 0))}'>{market_data.get('pct_change_day', 0):.2f}%</div>", unsafe_allow_html=True)
-                m2.markdown(f"<div class='metric-label'>Index Chg</div><div class='metric-value {get_metric_color(market_data.get('index_pct_change', 0))}'>{market_data.get('index_pct_change', 0):.2f}%</div>", unsafe_allow_html=True)
+                m1, m2, m3 = st.columns(3)
+                with m1:
+                    st.markdown(f"<div class='metric-label'>Stock Close</div><div class='metric-value-small'>{market_data['close']:.2f} {delta_span(market_data['pct_change_day'])}</div>", unsafe_allow_html=True)
+                with m2:
+                    st.markdown(f"<div class='metric-label'>Index Close</div><div class='metric-value-small'>{market_data['index_close']:.2f} {delta_span(market_data['index_pct_change'])}</div>", unsafe_allow_html=True)
+                with m3:
+                    st.markdown(f"<div class='metric-label'>Rel. to Index</div><div class='metric-value-small'>{market_data['relative_change']:.2f}%</div>", unsafe_allow_html=True)
                 
-                # Row 2: Relative & Volume
-                m3, m4 = st.columns(2)
-                m3.markdown(f"<div class='metric-label'>Rel Change</div><div class='metric-value {get_metric_color(market_data.get('relative_change', 0))}'>{market_data.get('relative_change', 0):.2f}%</div>", unsafe_allow_html=True)
-                m4.markdown(f"<div class='metric-label'>Vol Ratio</div><div class='metric-value'>{market_data.get('volume_rel', 0):.2f}x</div>", unsafe_allow_html=True)
+                st.markdown("") # Spacer
+
+                # Row 2: Intraday, Sigma, Vol
+                m4, m5, m6 = st.columns(3)
+                with m4:
+                    stock_intra = market_data.get('intraday_change', 0)
+                    rel_intra = market_data.get('relative_intraday', 0)
+                    st.markdown(f"<div class='metric-label'>Intraday (Stock/Rel)</div><div class='metric-value-small'>{delta_span(stock_intra)} / {delta_span(rel_intra)}</div>", unsafe_allow_html=True)
+                with m5:
+                    sigma = market_data.get('sigma_move', 0)
+                    sigma_color = "metric-positive" if sigma > 0 else "metric-negative"
+                    st.markdown(f"<div class='metric-label'>Sigma Move (Last 30d)</div><div class='metric-value-small'><span class='{sigma_color}'>{sigma:+.1f}σ</span></div>", unsafe_allow_html=True)
+                with m6:
+                    st.markdown(f"<div class='metric-label'>Vol Ratio (Last 20d)</div><div class='metric-value-small'>{market_data['volume_rel']:.1f}x</div>", unsafe_allow_html=True)
+
+                st.markdown("") # Spacer
+
+                # Row 3: CAR
+                m7, m8, m9 = st.columns(3)
+                with m7:
+                    if 'car_pre_3d' in market_data:
+                        st.markdown(f"<div class='metric-label'>Pre-Event CAR (T-3)</div><div class='metric-value-small'>{market_data['car_pre_3d']:.2f}%</div>", unsafe_allow_html=True)
+                with m8:
+                    if 'car_3d' in market_data:
+                        st.markdown(f"<div class='metric-label'>Post-Event CAR (T+3)</div><div class='metric-value-small'>{market_data['car_3d']:.2f}%</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='metric-label'>Abnormal Ret</div><div class='metric-value-small'>{market_data.get('abnormal_return', 0):.2f}%</div>", unsafe_allow_html=True)
+                with m9:
+                    st.markdown(f"<div class='metric-label'>Gap %</div><div class='metric-value-small'>{delta_span(market_data.get('gap_pct', 0))}</div>", unsafe_allow_html=True)
                 
+                st.markdown("")
                 if market_data.get('is_mock'):
                     st.caption("⚠️ Market data simulated")
             else:
                 st.info("Market data unavailable for this date.")
             st.markdown("") 
 
+        # Price Chart Expander
+        if market_data and 'chart_data' in market_data and market_data['chart_data'] is not None:
+            with st.expander("Price Trend (T-40 to T+10)", expanded=False):
+                # Prepare data for Altair
+                chart_df = market_data['chart_data'].reset_index()
+                # Rename first column to Date (it might be 'index' or 'Date')
+                chart_df.rename(columns={chart_df.columns[0]: 'Date'}, inplace=True)
+                # Ensure Date is datetime for Altair and comparison
+                chart_df['Date'] = pd.to_datetime(chart_df['Date'])
+                
+                # Melt for Altair (combining different assets into a single column)
+                chart_df = chart_df.melt('Date', var_name='Asset', value_name='Return')
+                
+                # Create Chart
+                base = alt.Chart(chart_df).encode(
+                    x=alt.X('Date:T', axis=alt.Axis(format='%m/%d/%y', title='Date'))
+                )
+
+                lines = base.mark_line(point=True).encode(
+                    y=alt.Y('Return:Q', axis=alt.Axis(format='.0f'), title='Return (%)'),
+                    color=alt.Color('Asset:N', legend=alt.Legend(title=None, orient='top')),
+                    tooltip=[
+                        alt.Tooltip('Date:T', format='%m/%d/%y', title='Date'),
+                        alt.Tooltip('Asset:N', title='Asset'),
+                        alt.Tooltip('Return:Q', format='.2f', title='Return (%)')
+                    ]
+                )
+                
+                # Define vertical rules for T-3 and T+3
+                rules_data = []
+                if market_data.get('date_t_minus_3'):
+                    rules_data.append({'Date': pd.Timestamp(market_data['date_t_minus_3']), 'Color': 'red', 'Label': 'T-3'})
+                if market_data.get('date_t_plus_3'):
+                    rules_data.append({'Date': pd.Timestamp(market_data['date_t_plus_3']), 'Color': 'red', 'Label': 'T+3'})
+                rules_df = pd.DataFrame(rules_data)
+                rules = alt.Chart(rules_df).mark_rule(strokeDash=[4, 4]).encode(
+                    x='Date:T',
+                    color=alt.Color('Color:N', scale=None),
+                    tooltip=['Label:N']
+                )
+                # Rule Labels
+                rule_labels = alt.Chart(rules_df).mark_text(
+                    align='left',
+                    baseline='top',
+                    dx=5,
+                    dy=5,
+                    fontSize=11
+                ).encode(
+                    x='Date:T',
+                    y=alt.value(0),
+                    text='Label:N',
+                    color=alt.Color('Color:N', scale=None)
+                )
+                
+                # Highlight Event Day Points
+                event_df = chart_df[chart_df['Date'] == pd.Timestamp(market_data.get('date_event'))]
+                points = alt.Chart(event_df).mark_point(filled=True, size=100, color='yellow', stroke='black', strokeWidth=2).encode(
+                    x='Date:T',
+                    y='Return:Q',
+                    tooltip=[
+                        alt.Tooltip('Date:T', format='%m/%d/%y', title='Date'),
+                        alt.Tooltip('Asset:N', title='Asset'),
+                        alt.Tooltip('Return:Q', format='.2f', title='Return (%)')
+                    ]
+                )
+                
+                # Event Day Label
+                event_label = alt.Chart(event_df).mark_text(
+                    align='center',
+                    baseline='bottom',
+                    dy=-10, # Shift up
+                    fontSize=11,
+                    fontWeight='bold',
+                    color='white'
+                ).encode(
+                    x='Date:T',
+                    y='Return:Q',
+                    text=alt.value('Event Day')
+                )
+
+                chart = alt.layer(lines, rules, rule_labels, points, event_label).properties(height=400).interactive()
+                
+                st.altair_chart(chart, use_container_width=True)
 
         with st.expander("Model Validation", expanded=False):
             # Dynamic Feedback (No Form to allow interactivity)

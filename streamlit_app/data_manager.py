@@ -65,16 +65,16 @@ class DataManager:
     def is_favorite(self, news_id):
         return news_id in self.favorites
 
-    def get_market_data(self, ticker, date_obj, local_ticker=None, index_name=None):
+    def get_market_data(self, ticker, date_obj, local_ticker=None, index_name=None, sentiment_score=None):
         """
         Fetches market data for a specific ticker and date.
-        Returns a dictionary of metrics.
+        Returns a dictionary of metrics including CAR and Impact analysis.
         """
         if date_obj is None or pd.isna(date_obj):
             return None
 
         # Create a cache key
-        key = f"{ticker}_{local_ticker}_{date_obj}"
+        key = f"{ticker}_{local_ticker}_{date_obj}_{sentiment_score}_v7"
         if key in self.market_data_cache:
             return self.market_data_cache[key]
 
@@ -82,35 +82,48 @@ class DataManager:
         
         try:
             # Determine Ticker Symbol
-            # If local_ticker is provided and looks like a Japanese code (4 digits), use it
             target_ticker = ticker
-            if local_ticker and str(local_ticker).isdigit():
-                target_ticker = f"{local_ticker}.T"
+            if local_ticker:
+                if str(local_ticker).isdigit():
+                    target_ticker = f"{local_ticker}.T"
+                else:
+                    target_ticker = local_ticker
             
             # Determine Index Ticker
             index_ticker = "^TOPX" # Default
             if index_name == "TOPIX":
-                index_ticker = "1306.T" # Use ETF as proxy if ^TOPX fails (which it does often)
+                index_ticker = "1306.T" # Use ETF as proxy
             
-            # Define window: Start = Date - 10 days (to get PrevClose), End = Date + 5
-            start_date = date_obj - timedelta(days=10)
-            end_date = date_obj + timedelta(days=5)
+            # Define window: Start = Date - 40 days (for volatility/avg), End = Date + 10
+            # Convert to string to ensure yfinance handles it correctly
+            start_date = (date_obj - timedelta(days=40)).strftime('%Y-%m-%d')
+            end_date = (date_obj + timedelta(days=10)).strftime('%Y-%m-%d')
             
             # Fetch Stock Data
             stock = yf.Ticker(target_ticker)
             hist = stock.history(start=start_date, end=end_date)
             
             # Fetch Index Data
+            # Try ^TOPX first
             idx = yf.Ticker(index_ticker)
             hist_idx = idx.history(start=start_date, end=end_date)
+            
+            # Fallback to 1306.T (TOPIX ETF) if ^TOPX is empty or missing
+            if hist_idx.empty and index_ticker == "^TOPX":
+                print("⚠️ ^TOPX data missing, falling back to 1306.T")
+                idx = yf.Ticker("1306.T")
+                hist_idx = idx.history(start=start_date, end=end_date)
 
             if hist.empty:
                 raise ValueError(f"No data found for {target_ticker}")
 
-            # Normalize index to date only
+            # Normalize index to date only and sort
             hist.index = hist.index.date
+            hist = hist.sort_index()
+            
             if not hist_idx.empty:
                 hist_idx.index = hist_idx.index.date
+                hist_idx = hist_idx.sort_index()
             
             # Locate the specific date
             target_ts = date_obj
@@ -126,58 +139,180 @@ class DataManager:
             # Get Data for Target Day
             day_data = hist.loc[target_ts]
             
-            # Get Previous Trading Day (for Day Change)
-            # We need the row strictly before target_ts
-            past_days = hist.loc[:target_ts].iloc[:-1]
-            if past_days.empty:
-                # Can't calc change without prev day
-                prev_close = day_data['Open'] # Fallback
-            else:
-                prev_close = past_days.iloc[-1]['Close']
+            # Get Previous Trading Day
+            # Use integer location to be safe
+            try:
+                target_idx = hist.index.get_loc(target_ts)
+                if target_idx > 0:
+                    prev_close = hist.iloc[target_idx - 1]['Close']
+                else:
+                    # Fallback if it's the first day in the fetched history
+                    prev_close = day_data['Open']
+            except Exception:
+                prev_close = day_data['Open']
 
-            # --- Stock Metrics ---
+            # --- Basic Metrics ---
             metrics['close'] = day_data['Close']
             metrics['open'] = day_data['Open']
-            
-            # 1. Stock % Change on Day (Close vs Prev Close)
             metrics['pct_change_day'] = ((day_data['Close'] - prev_close) / prev_close) * 100
-            
-            # 2. Stock % Intraday Change (Close vs Open)
-            metrics['intraday_change'] = ((day_data['Close'] - day_data['Open']) / day_data['Open']) * 100
-            
-            # 3. Stock % Change at Open (Open vs Prev Close)
-            metrics['open_change_pct'] = ((day_data['Open'] - prev_close) / prev_close) * 100
-            
             metrics['volume'] = day_data['Volume']
             
-            # Avg Volume (past 5 days available in window)
-            metrics['avg_volume'] = hist['Volume'].mean()
-            metrics['volume_rel'] = metrics['volume'] / metrics['avg_volume'] if metrics['avg_volume'] else 1.0
+            # Gap % (Overnight Move: Open vs Prev Close)
+            metrics['gap_pct'] = ((day_data['Open'] - prev_close) / prev_close) * 100
+            
+            # Intraday Trend (Close vs Open)
+            metrics['intraday_change'] = ((day_data['Close'] - day_data['Open']) / day_data['Open']) * 100
+            
+            # Sigma Move (Z-Score)
+            # Use past 30 trading days for volatility
+            past_hist = hist.loc[:target_ts].iloc[:-1] # Exclude today
+            if len(past_hist) >= 20:
+                # Calculate daily returns
+                past_returns = past_hist['Close'].pct_change().dropna()
+                # Take last 30 days
+                window_returns = past_returns.tail(30)
+                
+                mean_ret = window_returns.mean()
+                std_ret = window_returns.std()
+                
+                day_ret = metrics['pct_change_day'] / 100.0
+                
+                if std_ret > 0:
+                    metrics['sigma_move'] = (day_ret - mean_ret) / std_ret
+                else:
+                    metrics['sigma_move'] = 0.0
+            else:
+                metrics['sigma_move'] = 0.0
+            
+            # Avg Volume & Std Dev (past 20 days)
+            window_hist = hist.loc[:target_ts].iloc[-21:-1] # Last 20 days before today
+            if not window_hist.empty:
+                avg_vol = window_hist['Volume'].mean()
+                std_vol = window_hist['Volume'].std()
+                metrics['volume_rel'] = metrics['volume'] / avg_vol if avg_vol else 1.0
+                metrics['volume_z_score'] = (metrics['volume'] - avg_vol) / std_vol if std_vol else 0.0
+            else:
+                metrics['volume_rel'] = 1.0
+                metrics['volume_z_score'] = 0.0
 
             # --- Index Metrics ---
             metrics['index_pct_change'] = 0.0
+            metrics['index_close'] = 0.0
+            metrics['index_intraday'] = 0.0
+            
             if not hist_idx.empty and target_ts in hist_idx.index:
                 idx_day = hist_idx.loc[target_ts]
+                metrics['index_close'] = idx_day['Close']
+                metrics['index_intraday'] = ((idx_day['Close'] - idx_day['Open']) / idx_day['Open']) * 100
                 
-                # Find prev index day
                 past_idx = hist_idx.loc[:target_ts].iloc[:-1]
                 if not past_idx.empty:
                     prev_idx_close = past_idx.iloc[-1]['Close']
                     metrics['index_pct_change'] = ((idx_day['Close'] - prev_idx_close) / prev_idx_close) * 100
             
-            # 4. Relative Change (Stock Day Chg - Index Day Chg)
             metrics['relative_change'] = metrics['pct_change_day'] - metrics['index_pct_change']
+            metrics['relative_intraday'] = metrics['intraday_change'] - metrics['index_intraday']
             
-            # Abnormal Return (Simplified as Relative Change for now)
-            metrics['abnormal_return'] = metrics['relative_change']
+            # --- CAR Calculation (T+0 to T+3) ---
+            car = 0.0
+            # Get dates from target_ts onwards
+            post_dates = [d for d in hist.index if d >= target_ts][:4] # T+0 to T+3
+            
+            for d in post_dates:
+                # Stock Return
+                d_data = hist.loc[d]
+                d_prev = hist.loc[:d].iloc[-2]['Close'] if hist.loc[:d].shape[0] >= 2 else d_data['Open']
+                s_ret = (d_data['Close'] - d_prev) / d_prev
+                
+                # Index Return
+                i_ret = 0.0
+                if not hist_idx.empty and d in hist_idx.index:
+                    i_data = hist_idx.loc[d]
+                    i_prev = hist_idx.loc[:d].iloc[-2]['Close'] if hist_idx.loc[:d].shape[0] >= 2 else i_data['Open']
+                    i_ret = (i_data['Close'] - i_prev) / i_prev
+                
+                car += (s_ret - i_ret)
+            
+            metrics['car_3d'] = car * 100 # Convert to percentage
+            
+            # --- Pre-Event CAR Calculation (T-3 to T-1) ---
+            car_pre = 0.0
+            # Get dates strictly before target_ts
+            pre_dates = [d for d in hist.index if d < target_ts][-3:] # Last 3 days before event
+            
+            for d in pre_dates:
+                # Stock Return
+                d_data = hist.loc[d]
+                d_prev = hist.loc[:d].iloc[-2]['Close'] if hist.loc[:d].shape[0] >= 2 else d_data['Open']
+                s_ret = (d_data['Close'] - d_prev) / d_prev
+                
+                # Index Return
+                i_ret = 0.0
+                if not hist_idx.empty and d in hist_idx.index:
+                    i_data = hist_idx.loc[d]
+                    i_prev = hist_idx.loc[:d].iloc[-2]['Close'] if hist_idx.loc[:d].shape[0] >= 2 else i_data['Open']
+                    i_ret = (i_data['Close'] - i_prev) / i_prev
+                
+                car_pre += (s_ret - i_ret)
+            
+            metrics['car_pre_3d'] = car_pre * 100
+            
+            # Store Key Dates for Charting
+            metrics['date_event'] = target_ts
+            metrics['date_t_minus_3'] = pre_dates[0] if pre_dates else None
+            metrics['date_t_plus_3'] = post_dates[-1] if len(post_dates) > 3 else (post_dates[-1] if post_dates else None)
+
+            # Prepare Chart Data – daily returns (day‑over‑day)
+            df_chart = pd.DataFrame({
+                'Stock': hist['Close'],
+                'Index': hist_idx['Close'] if not hist_idx.empty else None
+            })
+            # Forward fill missing data and drop NaNs
+            df_chart = df_chart.ffill().dropna()
+
+            # Compute daily return relative to previous day
+            # (Close_t / Close_{t-1}) - 1  -> decimal
+            df_chart = df_chart.pct_change().dropna()
+            # Convert to percentage values for display (no % sign on axis)
+            df_chart = df_chart * 100
+            metrics['chart_data'] = df_chart
+
+            # Strong: CAR > 2% OR Volume Z > 2.0
+            # Medium: CAR > 1%
+            # Weak: CAR <= 1%
+            abs_car = abs(metrics['car_3d'])
+            if abs_car > 2.0 or metrics['volume_z_score'] > 2.0:
+                metrics['impact_strength'] = "Strong"
+            elif abs_car > 1.0:
+                metrics['impact_strength'] = "Medium"
+            else:
+                metrics['impact_strength'] = "Weak"
+                
+            # --- Sentiment Alignment ---
+            metrics['sentiment_alignment'] = "N/A"
+            if sentiment_score is not None:
+                try:
+                    score = float(sentiment_score)
+                    # Aligned if signs match (and magnitude is relevant)
+                    if (score > 0.2 and metrics['car_3d'] > 0) or (score < -0.2 and metrics['car_3d'] < 0):
+                        metrics['sentiment_alignment'] = "Aligned"
+                    elif (score > 0.2 and metrics['car_3d'] < -0.5) or (score < -0.2 and metrics['car_3d'] > 0.5):
+                        metrics['sentiment_alignment'] = "Diverged"
+                    else:
+                        metrics['sentiment_alignment'] = "Neutral"
+                except:
+                    pass
 
         except Exception as e:
             print(f"Error fetching data: {e}")
-            # Fallback to mock if absolutely necessary, but try to avoid
             metrics = {
-                'close': 0, 'pct_change_day': 0, 'intraday_change': 0,
-                'open_change_pct': 0, 'relative_change': 0, 'abnormal_return': 0,
-                'volume_rel': 0, 'is_mock': True
+                'close': 0, 'pct_change_day': 0, 'volume_rel': 0, 
+                'index_pct_change': 0, 'relative_change': 0, 
+                'car_3d': 0, 'car_pre_3d': 0, 'impact_strength': 'N/A', 'sentiment_alignment': 'N/A',
+                'index_close': 0, 'intraday_change': 0, 'relative_intraday': 0, 'gap_pct': 0, 'sigma_move': 0,
+                'chart_data': None,
+                'date_event': None, 'date_t_minus_3': None, 'date_t_plus_3': None,
+                'is_mock': True
             }
 
         self.market_data_cache[key] = metrics
