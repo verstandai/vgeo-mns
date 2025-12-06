@@ -127,12 +127,12 @@
 
 /* Metrics */
 .metric-label {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     color: #a0a0a0;
 }
 
 .metric-value {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 600;
 }
 
