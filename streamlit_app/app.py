@@ -155,6 +155,28 @@ def render_sidebar(df, manager):
     if selected_correlations:
         view_df = view_df[view_df['event_correlation'].isin(selected_correlations)]
 
+    # Alignment Filter
+    if not view_df.empty:
+        # Create a copy to avoid SettingWithCopyWarning when adding new column
+        view_df = view_df.copy()
+        
+        def get_alignment_status(row):
+            md = manager.get_market_data(
+                row['us_ticker_name'], 
+                row['parsed_date'],
+                local_ticker=row.get('local_ticker_name'),
+                index_name=row.get('index'),
+                sentiment_score=row.get('news_sentiment')
+            )
+            return md.get('sentiment_alignment', 'Unknown') if md else 'Unknown'
+
+        view_df['alignment'] = view_df.apply(get_alignment_status, axis=1)
+        
+        all_alignments = ["Aligned", "Divergent", "Unknown"]
+        selected_alignments = st.sidebar.multiselect("Filter by Alignment", all_alignments, default=[])
+        if selected_alignments:
+            view_df = view_df[view_df['alignment'].isin(selected_alignments)]
+
     st.sidebar.markdown("---")
 
     # Breaking/Recap Filter
@@ -171,19 +193,32 @@ def render_sidebar(df, manager):
     hide_duplicates = st.sidebar.checkbox("Hide User-Flagged Duplicates", value=True)
     # TODO: Implement actual filtering based on feedback_log.csv
     
+
     return view_df, selected_ticker
 
-def render_metrics(view_df):
+def render_metrics(view_df, manager):
     """Renders the top-level summary metrics."""
+    # Calculate Bullish/Bearish counts dynamically using pre-calculated alignment
+    bullish_count = 0
+    bearish_count = 0
+    
+    if 'alignment' in view_df.columns:
+        for _, row in view_df.iterrows():
+            sentiment = row.get('sentiment_category', '')
+            alignment = row['alignment']
+            
+            if sentiment == 'Positive' and alignment == 'Aligned':
+                bullish_count += 1
+            elif sentiment == 'Negative' and alignment == 'Aligned':
+                bearish_count += 1
+
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Total Events", len(view_df))
     with col2:
-        bullish = len(view_df[view_df['news_sentiment'] == 'POSITIVE'])
-        st.metric("Bullish Signals", bullish)
+        st.metric("Bullish Signals", bullish_count)
     with col3:
-        bearish = len(view_df[view_df['news_sentiment'] == 'NEGATIVE'])
-        st.metric("Bearish Signals", bearish)
+        st.metric("Bearish Signals", bearish_count)
     st.markdown("---")
 
 def render_news_card(index, row, manager):
@@ -517,7 +552,7 @@ def main():
     view_df, selected_ticker = render_sidebar(df, manager)
     
     st.title(f"News Analysis: {selected_ticker}")
-    render_metrics(view_df)
+    render_metrics(view_df, manager)
     
     for index, row in view_df.iterrows():
         render_news_card(index, row, manager)
