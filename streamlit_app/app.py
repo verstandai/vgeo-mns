@@ -2,6 +2,7 @@ import streamlit as st
 # Force Reload
 import pandas as pd
 import os
+import html
 from datetime import datetime, timedelta
 from data_manager import DataManager
 
@@ -24,7 +25,7 @@ def load_css():
     """Loads the custom CSS."""
     css_path = os.path.join(os.path.dirname(__file__), 'assets', 'style.css')
     with open(css_path) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True) #allow injection of customized html 
 
 @st.cache_resource
 def get_manager():
@@ -53,7 +54,8 @@ def render_sidebar(df, manager):
     search_query = st.sidebar.text_input("🔍 Global Search", placeholder="Headline, reasoning, ticker...")
     if search_query:
         # Search across multiple columns
-        mask = df.apply(lambda row: search_query.lower() in str(row['headline']).lower() or 
+        mask = df.apply(lambda row: search_query.lower() in str(row['headline']).lower() or     
+                                    search_query.lower() in str(row['description']).lower() or
                                     search_query.lower() in str(row['reasoning']).lower() or
                                     search_query.lower() in str(row['key_factors']).lower() or
                                     search_query.lower() in str(row['us_ticker_name']).lower(), axis=1)
@@ -128,10 +130,22 @@ def render_sidebar(df, manager):
     st.sidebar.markdown("---")
 
     # Sentiment Filter
-    all_sentiments = sorted(df['news_sentiment'].unique().tolist())
+    # Create categorical column for filtering
+    def categorize_sentiment(score):
+        try:
+            s = float(score)
+            if s > 0.25: return "Positive"
+            if s < -0.25: return "Negative"
+            return "Neutral"
+        except:
+            return "Neutral"
+
+    view_df['sentiment_category'] = view_df['news_sentiment'].apply(categorize_sentiment)
+    
+    all_sentiments = ["Positive", "Negative", "Neutral"]
     selected_sentiments = st.sidebar.multiselect("Filter by Sentiment", all_sentiments, default=[])
     if selected_sentiments:
-        view_df = view_df[view_df['news_sentiment'].isin(selected_sentiments)]
+        view_df = view_df[view_df['sentiment_category'].isin(selected_sentiments)]
 
     # Event Correlation Filter (Dropdown)
     # Get unique non-null values
@@ -143,7 +157,7 @@ def render_sidebar(df, manager):
     st.sidebar.markdown("---")
 
     # Breaking/Recap Filter
-    show_only_breaking = st.sidebar.checkbox("Show Only Breaking Events", value=True)
+    show_only_breaking = st.sidebar.checkbox("Show Only Breaking Events", value=False)
     if show_only_breaking:
         view_df = view_df[view_df['breaking_recap'] == 'Breaking']
 
@@ -181,9 +195,27 @@ def render_news_card(index, row, manager):
         index_name=row.get('index')
     )
     
-    sentiment_color = "badge-positive" if abs(row['news_sentiment']) > 0.5 else "badge-negative" if abs(row['news_sentiment']) < 0.5 else "badge-insignificant"
+    # Determine Sentiment Badge
+    sent_cat = row.get('sentiment_category', 'Neutral')
+    if sent_cat == 'Positive':
+        sentiment_color = "badge-positive"
+    elif sent_cat == 'Negative':
+        sentiment_color = "badge-negative"
+    else:
+        sentiment_color = "badge-insignificant"
+
+    corr_cat = row.get('event_correlation', 'N/A')
+    if corr_cat == 'Strong':
+        corr_color = "badge-strong"
+    elif corr_cat == 'Medium':
+        corr_color = "badge-medium"
+    elif corr_cat == 'Weak':
+        corr_color = "badge-weak"
+    else:
+        corr_color = "badge-insignificant"
+
     sig_badge = "badge-significant" if row['classification'] == 'SIGNIFICANT' else "badge-insignificant"
-    recap_badge = "badge-significant" if row['breaking_recap'] == 'Breaking' else "badge-insignificant" if row['breaking_recap'] == 'Recap' else "badge-insignificant"
+    recap_badge = "badge-breaking" if row['breaking_recap'] == 'Breaking' else "badge-insignificant" if row['breaking_recap'] == 'Recap' else "badge-insignificant"
 
     # Format Date
     display_date = row['parsed_date'].strftime('%b %d, %Y').upper() if row['parsed_date'] else row['date']
@@ -193,14 +225,20 @@ def render_news_card(index, row, manager):
     fav_icon = "⭐" if is_fav else "☆"
     fav_label = "Saved" if is_fav else "Save"
     
+    # Escape HTML content to prevent rendering issues (e.g., <From Minkabu>)
+    safe_headline = html.escape(str(row['headline']))
+    safe_company = html.escape(str(row.get('company_name', '')))
+    safe_source = html.escape(str(row['source']))
+    safe_reporter = html.escape(str(row.get('reporter', 'Unknown')))
+
     with st.container():
         # Header Row with Favorite Button
         c_head, c_fav = st.columns([8, 1])
         with c_head:
             # Determine badges
             category_badge = f'<span class="badge badge-insignificant">{row.get("event_category", "Unknown")}</span>'
-            recap_badge = f'<span class="badge {recap_badge}">{row.get("breaking_recap", "Unknown")}</span>'
-            sig_badge = f'<span class="badge {sig_badge}">{row.get("classification", "Unknown")}</span>'
+            recap_badge_html = f'<span class="badge {recap_badge}">{row.get("breaking_recap", "Unknown").upper()}</span>'
+            sig_badge_html = f'<span class="badge {sig_badge}">{row.get("classification", "Unknown")}</span>'
 
             st.markdown(f"""
             <div class="news-card">
@@ -208,16 +246,15 @@ def render_news_card(index, row, manager):
                     <div class="header-left">
                         <span class="news-date">{display_date}</span>
                         <span class="ticker-badge">{row['us_ticker_name']}</span>
-                        <span class="company-name">{row.get('company_name', '')}</span>
+                        <span class="company-name">{safe_company}</span>
                     </div>
                     <div>
-                        {category_badge}
-                        {recap_badge}
-                        {sig_badge}
+                        {recap_badge_html}
+                        {sig_badge_html}
                     </div>
                 </div>
-                <div class="news-headline">{row['headline']}</div>
-                <div class="news-source">Source: {row['source']} | Reporter: {row.get('reporter', 'Unknown')}</div>
+                <div class="news-headline">{safe_headline}</div>
+                <div class="news-source">Source: {safe_source} | Reporter: {safe_reporter}</div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -243,12 +280,13 @@ def render_news_card(index, row, manager):
             with e1:
                 st.markdown(f"<div class='metric-label'>Category</div><div class='metric-value-small'>{row.get('event_category', 'N/A')}</div>", unsafe_allow_html=True)
                 st.markdown("")
-                st.markdown(f"<div class='metric-label'>Correlation</div><div class='metric-value-small'>{row.get('event_correlation', 'N/A')}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-label'>Sentiment</div><span class=\"badge {sentiment_color}\" style='margin-left: 0;'>{sent_cat.upper()} ({row['news_sentiment']:.2f})</span>", unsafe_allow_html=True)                
+
+
             with e2:
-                st.markdown(f"<div class='metric-label'>Sentiment</div><div class='metric-value-small'>{row.get('news_sentiment', 0):.2f}</div>", unsafe_allow_html=True)
-                
-            st.markdown("")
-                
+                st.markdown(f"<div class='metric-label'>Correlation</div><span class=\"badge {corr_color}\" style='margin-left: 0;'>{corr_cat.upper()}</span>", unsafe_allow_html=True)
+
+            st.markdown('<div style="border-top: 1px solid #444; margin: 15px 0;"></div>', unsafe_allow_html=True)
             st.markdown("#### Market Impact (Day of Event)")
             if market_data:
                 # Row 1: Stock & Index Change

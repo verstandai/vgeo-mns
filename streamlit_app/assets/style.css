@@ -65,19 +65,19 @@
 
 /* Source Info */
 .news-source {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: #888;
     margin-top: 5px;
-    font-style: italic;
+    /* font-style: italic; */
 }
 
 /* Badges */
 .badge {
     display: inline-block;
     padding: 0.25em 0.6em;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.5;
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
@@ -85,13 +85,18 @@
     margin-left: 5px;
 }
 
-.badge-significant {
-    background-color: #dc3545;
+.badge-insignificant {
+    background-color: #6c757d;
     color: white;
 }
 
-.badge-insignificant {
-    background-color: #6c757d;
+.badge-significant {
+    background-color: #d97706;
+    color: white;
+}
+
+.badge-breaking {
+    background-color: #ef4444;
     color: white;
 }
 
@@ -102,6 +107,21 @@
 
 .badge-negative {
     background-color: #dc3545;
+    color: white;
+}
+
+.badge-strong {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.badge-medium {
+    background-color: #60a5fa;
+    color: white;
+}
+
+.badge-weak {
+    background-color: #93c5fd;
     color: white;
 }
 
