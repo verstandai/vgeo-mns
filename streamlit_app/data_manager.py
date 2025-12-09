@@ -218,7 +218,9 @@ class DataManager:
             # Get dates from target_ts onwards
             post_dates = [d for d in hist.index if d >= target_ts][:4] # T+0 to T+3
             
-            for d in post_dates:
+            car_t0 = 0.0 # T+0 only
+            
+            for i, d in enumerate(post_dates):
                 # Stock Return
                 d_data = hist.loc[d]
                 d_prev = hist.loc[:d].iloc[-2]['Close'] if hist.loc[:d].shape[0] >= 2 else d_data['Open']
@@ -231,9 +233,13 @@ class DataManager:
                     i_prev = hist_idx.loc[:d].iloc[-2]['Close'] if hist_idx.loc[:d].shape[0] >= 2 else i_data['Open']
                     i_ret = (i_data['Close'] - i_prev) / i_prev
                 
-                car += (s_ret - i_ret)
+                daily_ar = (s_ret - i_ret)
+                car += daily_ar
+                if i == 0:
+                    car_t0 = daily_ar
             
             metrics['car_3d'] = car * 100 # Convert to percentage
+            metrics['abnormal_return'] = car_t0 * 100
             
             # --- Pre-Event CAR Calculation (T-3 to T-1) ---
             car_pre = 0.0
