@@ -300,9 +300,9 @@ class DataManager:
                 try:
                     score = float(sentiment_score)
                     # Aligned if signs match (and magnitude is relevant)
-                    if (score > 0.2 and metrics['car_3d'] > 0) or (score < -0.2 and metrics['car_3d'] < 0):
+                    if (score > 0.25 and metrics['relative_change'] > 0) or (score < -0.25 and metrics['relative_change'] < 0):
                         metrics['sentiment_alignment'] = "Aligned"
-                    elif (score > 0.2 and metrics['car_3d'] < -0.5) or (score < -0.2 and metrics['car_3d'] > 0.5):
+                    elif (score > 0.25 and metrics['relative_change'] < 0) or (score < -0.25 and metrics['relative_change'] > 0):
                         metrics['sentiment_alignment'] = "Diverged"
                     else:
                         metrics['sentiment_alignment'] = "Neutral"
