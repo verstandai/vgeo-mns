@@ -121,7 +121,9 @@ def render_news_card(index, row, manager):
                 st.markdown(f"**Description:** {row['description']}")
 
             if pd.notna(row.get('key_takeaways')):
-                st.markdown(f"**Key Takeaways:** {row['key_takeaways']}")
+                takeaways = str(row['key_takeaways']).split(';')
+                formatted_takeaways = "\n".join([f"* {t.strip()}" for t in takeaways if t.strip()])
+                st.markdown(f"**Key Takeaways:**\n\n{formatted_takeaways}")
 
             st.markdown("")
             
