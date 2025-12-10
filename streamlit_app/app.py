@@ -7,10 +7,12 @@ from data_manager import DataManager
 from modules import render_ui
 
 # --- Configuration ---
+# --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
 PAGE_ICON = "📈"
-DATA_PATH = "mns_demo_enriched.csv"
-FEEDBACK_PATH = "feedback_log.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(os.path.dirname(BASE_DIR), "mns_demo_enriched.csv")
+FEEDBACK_PATH = os.path.join(BASE_DIR, "feedback_log.csv")
 
 # --- Setup ---
 st.set_page_config(
@@ -30,8 +32,6 @@ def load_css():
 @st.cache_resource
 def get_manager():
     """Initializes and caches the DataManager."""
-    if os.getcwd().split('/')[-1] == 'streamlit_app':
-        DATA_PATH = "../mns_demo_enriched.csv"
     return DataManager(DATA_PATH, FEEDBACK_PATH)
 
 def render_sidebar(df, manager):
