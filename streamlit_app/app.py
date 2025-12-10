@@ -9,7 +9,7 @@ from modules import render_ui
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
 PAGE_ICON = "📈"
-DATA_PATH = "../mns_demo_enriched_2.csv"
+DATA_PATH = "../mns_demo_enriched.csv"
 FEEDBACK_PATH = "feedback_log.csv"
 
 # --- Setup ---
