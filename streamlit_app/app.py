@@ -38,7 +38,7 @@ def render_sidebar(df, manager):
     st.sidebar.markdown("---")
 
     if df.empty:
-        st.error("No data found. Please ensure mns_demo_enriched.csv is in the parent directory.")
+        st.error(f"No data found. Please ensure csv is in the parent directory. (CWD: {os.getcwd()})")
         st.stop()
 
     # --- Global Search ---
