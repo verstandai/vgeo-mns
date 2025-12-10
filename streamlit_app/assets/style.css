@@ -40,15 +40,20 @@
 .ticker-badge {
     background-color: #3b82f6;
     color: white;
-    padding: 0.2em 0.6em;
-    border-radius: 4px;
+    padding: 0.25em 0.6em;
+    font-size: 0.8rem;
     font-weight: 700;
-    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    margin-left: 5px;
 }
 
 /* Company Name */
 .company-name {
-    font-size: 1.1rem;
+    font-size: 1.0rem;
     font-weight: 600;
     color: #b0b0b0;
     margin-left: 5px;
@@ -148,12 +153,4 @@
 span[data-baseweb="tag"] {
     background-color: #2b3144 !important;
     color: #e0e0e0 !important;
-    border: 1px solid #444 !important;
-}
-
-/* Small Metric Value */
-.metric-value-small {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #e0e0e0;
 }
