@@ -30,6 +30,8 @@ def load_css():
 @st.cache_resource
 def get_manager():
     """Initializes and caches the DataManager."""
+    if os.getcwd().split('/')[-1] == 'streamlit_app':
+        DATA_PATH = "../mns_demo_enriched.csv"
     return DataManager(DATA_PATH, FEEDBACK_PATH)
 
 def render_sidebar(df, manager):
