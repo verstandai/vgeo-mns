@@ -9,7 +9,7 @@ from modules import render_ui
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
 PAGE_ICON = "📈"
-DATA_PATH = "../mns_demo_enriched.csv"
+DATA_PATH = "mns_demo_enriched.csv"
 FEEDBACK_PATH = "feedback_log.csv"
 
 # --- Setup ---
@@ -38,7 +38,7 @@ def render_sidebar(df, manager):
     st.sidebar.markdown("---")
 
     if df.empty:
-        st.error(f"No data found. Please ensure csv is in the parent directory. (CWD: {os.getcwd()})")
+        st.error(f"No data found. Path: {os.path.abspath(DATA_PATH)} (CWD: {os.getcwd()})")
         st.stop()
 
     # --- Global Search ---
