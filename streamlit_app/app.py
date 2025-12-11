@@ -1,12 +1,10 @@
 import streamlit as st
-# Force Reload
 import pandas as pd
 import os
 from datetime import datetime, timedelta
 from data_manager import DataManager
 from modules import render_ui
 
-# --- Configuration ---
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
 PAGE_ICON = "📈"
@@ -165,6 +163,14 @@ def render_sidebar(df, manager):
         if selected_alignments:
             view_df = view_df[view_df['alignment'].isin(selected_alignments)]
 
+
+    # Source Filter
+    all_sources = sorted(df['source_en'].dropna().unique().tolist())
+    selected_sources = st.sidebar.multiselect("Select Source", all_sources, default=[])
+    
+    if selected_sources:
+        view_df = view_df[view_df['source_en'].isin(selected_sources)]
+
     st.sidebar.markdown("---")
 
     # Breaking/Recap Filter
@@ -201,11 +207,11 @@ def render_metrics(view_df, manager):
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Total Events", len(view_df))
+        st.metric("Total Aligned Events", len(view_df))
     with col2:
-        st.metric("Bullish Signals", bullish_count)
+        st.metric("Bullish Aligned Events", bullish_count)
     with col3:
-        st.metric("Bearish Signals", bearish_count)
+        st.metric("Bearish Aligned Events", bearish_count)
     st.markdown("---")
 
 # --- Main Execution ---

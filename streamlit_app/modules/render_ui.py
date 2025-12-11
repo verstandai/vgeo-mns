@@ -75,7 +75,7 @@ def render_news_card(index, row, manager):
     
     safe_headline = html.escape(str(row['headline']))
     safe_company = html.escape(str(row.get('company_name', '')))
-    safe_source = html.escape(str(row['source']))
+    safe_source = html.escape(str(row['source_en']))
     safe_reporter = html.escape(str(row.get('reporter', 'Unknown')))
 
     with st.container():
