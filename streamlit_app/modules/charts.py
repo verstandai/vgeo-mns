@@ -226,9 +226,9 @@ def create_daily_chart(market_data):
         )
         # Rule Labels
         rule_labels = alt.Chart(rules_df).mark_text(
-            align='right',
+            align='left',
             baseline='top',
-            dx=-5,
+            dx=5,
             dy=20,
             fontSize=12
         ).encode(

@@ -137,6 +137,9 @@ def render_news_card(index, row, manager):
                     st.markdown(f"<div class='metric-label'>Category</div><div class='metric-value-small'>{row.get('event_category', 'N/A')}</div>", unsafe_allow_html=True)
                 with h2:
                     st.markdown(f"<div class='metric-label'>Sentiment</div><span class=\"badge {sentiment_color}\" style='margin-left: 0;'>{sent_cat.upper()} ({row['news_sentiment']:.2f})</span>", unsafe_allow_html=True)                
+                    st.markdown("")
+                    rel_bg = "badge-positive" if market_data.get('car_3d', 0) > 0 else "badge-negative"
+                    st.markdown(f"<div class='metric-label'>T-3 CAR</div><span class='badge {rel_bg}' style='margin-left: 0;'> {market_data.get('car_pre_3d', 'N/A'):.2f}%</span>", unsafe_allow_html=True)
                 with h3:
                     if 'sentiment_alignment' in market_data:
                         align_val = market_data.get('sentiment_alignment', 'N/A')
@@ -144,6 +147,10 @@ def render_news_card(index, row, manager):
                         
                         pub_context = f"News Published: {market_data.get('timing_label', 'During T+0 Market Hours')}"
                         st.markdown(f"<div class='metric-label'>Sentiment-Price Alignment</div><div class='metric-value-medium'><span class='{align_color}'>{align_val}</span></div><div style='font-size:0.8em; color:#888; margin-top:-4px'></div>", unsafe_allow_html=True)
+                    
+                    st.markdown("")
+                    rel_bg = "badge-positive" if market_data.get('car_3d', 0) > 0 else "badge-negative"
+                    st.markdown(f"<div class='metric-label'>T+3 CAR</div><span class='badge {rel_bg}' style='margin-left: 0;'> {market_data.get('car_3d', 'N/A'):.2f}%</span>", unsafe_allow_html=True)
 
                 st.markdown('<div style="border-top: 1px solid #444; margin: 10px 0;"></div>', unsafe_allow_html=True)
 

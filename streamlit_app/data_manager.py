@@ -490,14 +490,28 @@ class DataManager:
 
             metrics['sentiment_alignment'] = "N/A" # Default
             metrics['reaction_day_used'] = reaction_day 
+            
+            # Determine which return metric to use for alignment
+            # Default to short-term reaction
+            alignment_return = reaction_pct
+            
+            # If event is old enough to have T+3 data (approx 3 days), use CAR 3d
+            # Use car_3d if it's non-zero or we are confident.
+            # We use the time difference to decide preference.
+            try:
+                days_since = (datetime.now().date() - target_ts).days
+                if days_since >= 3:
+                    alignment_return = metrics.get('car_3d', 0.0)
+            except:
+                pass
 
             if sentiment_score is not None:
                 try:
                     score = float(sentiment_score)
                     # Threshold 0.1
-                    if (score > 0.1 and reaction_pct > 0) or (score < -0.1 and reaction_pct < 0):
+                    if (score > 0.1 and alignment_return > 0) or (score < -0.1 and alignment_return < 0):
                         metrics['sentiment_alignment'] = "Aligned"
-                    elif (score > 0.1 and reaction_pct < 0) or (score < -0.1 and reaction_pct > 0):
+                    elif (score > 0.1 and alignment_return < 0) or (score < -0.1 and alignment_return > 0):
                         metrics['sentiment_alignment'] = "Diverged"
                     else:
                         metrics['sentiment_alignment'] = "Neutral"
