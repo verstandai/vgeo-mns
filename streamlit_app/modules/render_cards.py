@@ -17,6 +17,31 @@ def fmt_vol(v):
     elif v >= 1_000: return f"{v/1_000:.1f}K"
     return f"{v:.0f}"
 
+def render_metrics(view_df, manager):
+    """Renders the top-level summary metrics."""
+    # Calculate Bullish/Bearish counts dynamically using pre-calculated alignment
+    bullish_count = 0
+    bearish_count = 0
+    
+    if 'alignment' in view_df.columns:
+        for _, row in view_df.iterrows():
+            sentiment = row.get('sentiment_category', '')
+            alignment = row['alignment']
+            
+            if sentiment == 'Positive' and alignment == 'Aligned':
+                bullish_count += 1
+            elif sentiment == 'Negative' and alignment == 'Aligned':
+                bearish_count += 1
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Aligned Events", len(view_df))
+    with col2:
+        st.metric("Bullish Aligned Events", bullish_count)
+    with col3:
+        st.metric("Bearish Aligned Events", bearish_count)
+    st.markdown("---")
+
 def render_news_card(index, row, manager):
     """Renders a single news card with details, feedback form, and lifecycle grid."""
     
