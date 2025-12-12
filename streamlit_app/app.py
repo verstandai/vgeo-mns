@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 from data_manager import DataManager
-from modules import render_cards, render_filter
+from modules import render_cards, render_filters
 
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(os.path.dirname(BASE_DIR), "mns_demo_enriched.csv")
 FEEDBACK_PATH = os.path.join(BASE_DIR, "feedback_log.csv")
 
-# --- Setup ---
+# --- PageSetup ---
 st.set_page_config(
     page_title=PAGE_TITLE,
     page_icon=PAGE_ICON,
@@ -34,15 +34,23 @@ def get_manager():
 
 # --- Main Execution ---
 def main():
+    # Load CSS and initialize DataManager
     load_css()
     manager = get_manager()
+
+    # Load the CSV file using DataManager
     df = manager.load_data()
     
-    view_df, selected_ticker = render_filter.render_sidebar(df, manager, DATA_PATH)
+    # Render the sidebar and get the selected ticker (filtered data)
+    view_df, selected_ticker = render_filters.render_sidebar(df, manager, DATA_PATH)
     
+    # Render the title (selected ticker)
     st.title(f"News Analysis: {selected_ticker}")
+
+    # Render top metrics (displaying aligned events, bullish events, bearish events)
     render_cards.render_metrics(view_df, manager)
     
+    # Render the news cards (each card displays a single news event)
     for index, row in view_df.iterrows():
         render_cards.render_news_card(index, row, manager)
 

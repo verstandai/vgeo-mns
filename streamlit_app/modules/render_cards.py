@@ -84,7 +84,7 @@ def render_news_card(index, row, manager):
                 
                 day_diff = (jst_dt.date() - est_dt.date()).days
                 if day_diff > 0: jst_str += " (+1)"
-                elif day_diff < 0: jst_str += " (-1)"
+                elif day_diff < 0: jst_str += " (-1)" #just in case
                 
                 time_str = f" | {est_str} EST / {jst_str} JST"
             else:
@@ -98,6 +98,7 @@ def render_news_card(index, row, manager):
     is_fav = manager.is_favorite(index)
     fav_icon = "⭐" if is_fav else "☆"
     
+    # To prevent broken formatting as the code is directly injecting headlines into html
     safe_headline = html.escape(str(row['headline']))
     safe_company = html.escape(str(row.get('company_name', '')))
     safe_source = html.escape(str(row['source_en']))
@@ -163,8 +164,9 @@ def render_news_card(index, row, manager):
                 with h2:
                     st.markdown(f"<div class='metric-label'>Sentiment</div><span class=\"badge {sentiment_color}\" style='margin-left: 0;'>{sent_cat.upper()} ({row['news_sentiment']:.2f})</span>", unsafe_allow_html=True)                
                     st.markdown("")
-                    rel_bg = "badge-positive" if market_data.get('car_3d', 0) > 0 else "badge-negative"
-                    st.markdown(f"<div class='metric-label'>T-3 CAR</div><span class='badge {rel_bg}' style='margin-left: 0;'> {market_data.get('car_pre_3d', 'N/A'):.2f}%</span>", unsafe_allow_html=True)
+                    val = market_data['car_pre_3d']
+                    rel_bg = "badge-positive" if val > 0 else "badge-negative"
+                    st.markdown(f"<div class='metric-label'>T-3 CAR</div><span class='badge {rel_bg}' style='margin-left: 0;'> {val:.2f}%</span>", unsafe_allow_html=True)
                 with h3:
                     if 'sentiment_alignment' in market_data:
                         align_val = market_data.get('sentiment_alignment', 'N/A')
@@ -174,8 +176,25 @@ def render_news_card(index, row, manager):
                         st.markdown(f"<div class='metric-label'>Sentiment-Price Alignment</div><div class='metric-value-medium'><span class='{align_color}'>{align_val}</span></div><div style='font-size:0.8em; color:#888; margin-top:-4px'></div>", unsafe_allow_html=True)
                     
                     st.markdown("")
-                    rel_bg = "badge-positive" if market_data.get('car_3d', 0) > 0 else "badge-negative"
-                    st.markdown(f"<div class='metric-label'>T+3 CAR</div><span class='badge {rel_bg}' style='margin-left: 0;'> {market_data.get('car_3d', 'N/A'):.2f}%</span>", unsafe_allow_html=True)
+                    # Verify if T+3 is actually available based on date
+                    days_since = 0
+                    if pd.notna(row['parsed_date']):
+                         d = row['parsed_date']
+                         # Handle both date and timestamp objects
+                         if hasattr(d, 'date'):
+                             d = d.date()
+                         days_since = (datetime.now().date() - d).days
+                    
+                    display_label = "T+3 CAR"
+                    if 1 <= days_since < 3:
+                        display_label = f"T+{days_since} CAR"
+                    
+                    if days_since >= 1 and 'car_3d' in market_data:
+                         val = market_data['car_3d']
+                         rel_bg = "badge-positive" if val > 0 else "badge-negative"
+                         st.markdown(f"<div class='metric-label'>{display_label}</div><span class='badge {rel_bg}' style='margin-left: 0;'> {val:.2f}%</span>", unsafe_allow_html=True)
+                    else:
+                         st.markdown(f"<div class='metric-label'>T+3 CAR</div><span class='badge badge-insignificant' style='margin-left: 0;'> N/A</span>", unsafe_allow_html=True)
 
                 st.markdown('<div style="border-top: 1px solid #444; margin: 10px 0;"></div>', unsafe_allow_html=True)
 
@@ -269,14 +288,14 @@ def render_news_card(index, row, manager):
                             row.get('timestamp'),
                             row.get('parsed_date')
                         )
-                        st.altair_chart(chart_h, width='stretch')
+                        st.altair_chart(chart_h, use_container_width=True)
                      else:
                         st.info("Hourly data not available (limited to last 730 days).")
 
                 with t2:
                     if has_daily:
                         chart_d = charts.create_daily_chart(market_data)
-                        st.altair_chart(chart_d, width='stretch')
+                        st.altair_chart(chart_d, use_container_width=True)
                     else:
                         st.info("Daily chart data unavailable.")
         

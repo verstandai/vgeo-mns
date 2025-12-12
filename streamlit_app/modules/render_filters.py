@@ -12,7 +12,7 @@ def render_sidebar(df, manager, data_path):
         st.stop()
 
     # --- Global Search ---
-    search_query = st.sidebar.text_input("🔍 Global Search", placeholder="Headline, reasoning, ticker...")
+    search_query = st.sidebar.text_input("🔍 Global Search", placeholder="Headline, description, key_takeaways, reasoning, ticker...")
     if search_query:
         # Search across multiple columns
         mask = df.apply(lambda row: search_query.lower() in str(row['headline']).lower() or     
@@ -38,14 +38,14 @@ def render_sidebar(df, manager, data_path):
     tickers = ["All Tickers"] + sorted(df['us_ticker_name'].unique().tolist())
     selected_ticker = st.sidebar.selectbox("Select Ticker", tickers, index=0)
     
-    # Filter DF by Ticker
+    # Filter DF by Ticker (the downstream df will be ticker_df)
     if selected_ticker == "All Tickers":
         ticker_df = df
     else:
         ticker_df = df[df['us_ticker_name'] == selected_ticker]
     
     # Date Filter
-    # Get unique dates from the filtered dataframe
+    # Get unique dates from the filtered dataframe (the downstream df will be view_df)
     dates = sorted(ticker_df['parsed_date'].dropna().unique(), reverse=True)
     view_df = ticker_df
 
@@ -53,6 +53,7 @@ def render_sidebar(df, manager, data_path):
         min_date = dates[-1]
         max_date = dates[0]
         
+        # Default date filter will be "Last 5 Days"
         date_mode = st.sidebar.selectbox(
             "Date Filter Mode", 
             ["Last 5 Days", "All History", "Specific Date", "Date Range"],
@@ -126,6 +127,7 @@ def render_sidebar(df, manager, data_path):
             )
             return md.get('sentiment_alignment', 'Unknown') if md else 'Unknown'
 
+        # Generate a new column for alignment based on market_data df
         view_df['alignment'] = view_df.apply(get_alignment_status, axis=1)
         
         all_alignments = ["Aligned", "Diverged", "Unknown"]
