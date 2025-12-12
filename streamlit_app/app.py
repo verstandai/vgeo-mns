@@ -85,7 +85,7 @@ def render_sidebar(df, manager):
         
         date_mode = st.sidebar.selectbox(
             "Date Filter Mode", 
-            ["All History", "Last 5 Days", "Specific Date", "Date Range"],
+            ["Last 5 Days", "All History", "Specific Date", "Date Range"],
             index=0
         )
         
