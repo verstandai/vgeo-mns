@@ -131,7 +131,7 @@ def render_sidebar(df, manager, data_path):
         # Generate a new column for alignment based on market_data df
         view_df['alignment'] = view_df.apply(get_alignment_status, axis=1)
         
-        all_alignments = ["Aligned", "Diverged", "Unknown"]
+        all_alignments = ["Aligned", "Diverged"]
         selected_alignments = st.sidebar.multiselect("Filter by Alignment", all_alignments, default=[])
         if selected_alignments:
             view_df = view_df[view_df['alignment'].isin(selected_alignments)]
