@@ -1,0 +1,73 @@
+{
+  "adr_id": "adr_jp_02",
+  "Name": "PANASONIC HOLDINGS CORP",
+  "adr_info": {
+    "US_ticker": "PCRHY",
+    "JP_ticker": "6752 JP",
+    "sector_list": [
+      "Industrials",
+      "Consumer Discretionary",
+      "Information Technology"
+    ],
+    "business_segment_categories": {
+      "Lifestyle": [
+        "Consumer Discretionary"
+      ],
+      "Automotive": [
+        "Industrials",
+        "Information Technology"
+      ],
+      "Energy": [
+        "Industrials"
+      ]
+    },
+    "US_peer_group": {
+      "Microsoft Corporation": {
+        "US_ticker": "MSFT"
+      },
+      "Apple Inc": {
+        "US_ticker": "AAPL"
+      },
+      "Netflix Inc": {
+        "US_ticker": "NFLX"
+      },
+      "NVIDIA Corporation": {
+        "US_ticker": "NVDA"
+      },
+      "Activision Blizzard Inc": {
+        "US_ticker": "ATVI"
+      },
+      "Electronic Arts Inc": {
+        "US_ticker": "EA"
+      },
+      "Samsung Electronics": {
+        "US_ticker": "SSNLF"
+      },
+      "Sony Corporation": {
+        "US_ticker": "SONY"
+      }
+    },
+    "JP_peer_group": {
+      "Sony Group": {
+        "US_ticker": "SONY",
+        "JP_ticker": "6758 JP"
+      },
+      "Hitachi Ltd": {
+        "US_ticker": "HTHIY",
+        "JP_ticker": "6501 JP"
+      },
+      "Mitsubishi Electric": {
+        "US_ticker": "MIELY",
+        "JP_ticker": "6503 JP"
+      },
+      "TDK Corporation": {
+        "US_ticker": "TTDKY",
+        "JP_ticker": "6762 JP"
+      },
+      "Renesas Electronics": {
+        "US_ticker": "RNECY",
+        "JP_ticker": "6723 JP"
+      }
+    }
+  }
+}

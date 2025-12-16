@@ -1,0 +1,79 @@
+{
+  "adr_id": "adr_jp_01",
+  "Name": "Sony Group",
+  "adr_info": {
+    "US_ticker": "SONY",
+    "JP_ticker": "6758 JP",
+    "sector_list": [
+      "Information Technology",
+      "Communication Services",
+      "Consumer Discretionary"
+    ],
+    "business_segment_categories": {
+      "Game & Network Services": [
+        "Information Technology",
+        "Entertainment"
+      ],
+      "Music": [
+        "Entertainment",
+        "Communication Services"
+      ],
+      "Pictures": [
+        "Entertainment",
+        "Communication Services"
+      ],
+      "Consumer Electronics": [
+        "Information Technology",
+        "Consumer Discretionary"
+      ],
+      "Imaging & Sensing Solutions": [
+        "Information Technology"
+      ],
+      "Semiconductors": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "Microsoft Corporation": {
+        "US_ticker": "MSFT"
+      },
+      "Apple Inc": {
+        "US_ticker": "AAPL"
+      },
+      "Netflix Inc": {
+        "US_ticker": "NFLX"
+      },
+      "NVIDIA Corporation": {
+        "US_ticker": "NVDA"
+      },
+      "Activision Blizzard Inc": {
+        "US_ticker": "ATVI"
+      },
+      "Electronic Arts Inc": {
+        "US_ticker": "EA"
+      }
+    },
+    "JP_peer_group": {
+      "Panasonic": {
+        "US_ticker": "PCRFY",
+        "JP_ticker": "6752 JP"
+      },
+      "Sharp": {
+        "US_ticker": "SHCAY",
+        "JP_ticker": "6753 JP"
+      },
+      "Kyocera Corporation": {
+        "US_ticker": "KDDIY",
+        "JP_ticker": "6917 JP"
+      },
+      "Canon Inc.": {
+        "US_ticker": "CAJPY",
+        "JP_ticker": "7751 JP"
+      },
+      "TDK Corporation": {
+        "US_ticker": "TTDKY",
+        "JP_ticker": "6762 JP"
+      }
+    }
+  }
+}

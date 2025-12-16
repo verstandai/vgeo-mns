@@ -35,7 +35,7 @@ def render_metrics(view_df, manager):
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Total Aligned Events", len(view_df))
+        st.metric("Total Events", len(view_df))
     with col2:
         st.metric("Bullish Aligned Events", bullish_count)
     with col3:

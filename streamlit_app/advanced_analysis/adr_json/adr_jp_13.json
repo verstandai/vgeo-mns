@@ -1,0 +1,69 @@
+{
+  "adr_id": "adr_jp_13",
+  "Name": "BANDAI NAMCO HOLDINGS",
+  "adr_info": {
+    "US_ticker": "NCBDY",
+    "JP_ticker": "7832 JP",
+    "sector_list": [
+      "Communication Services",
+      "Consumer Discretionary"
+    ],
+    "business_segment_categories": {
+      "Toys": [
+        "Consumer Discretionary"
+      ],
+      "Video Game": [
+        "Information Technology",
+        "Consumer Discretionary"
+      ],
+      "Network Entertainment": [
+        "Communication Services",
+        "Consumer Discretionary"
+      ],
+      "Visual & Music Production": [
+        "Communication Services"
+      ],
+      "Live Entertainment": [
+        "Communication Services"
+      ]
+    },
+    "US_peer_group": {
+      "Activision Blizzard Inc": {
+        "US_ticker": "ATVI"
+      },
+      "Electronic Arts Inc": {
+        "US_ticker": "EA"
+      },
+      "Take-Two Interactive Software": {
+        "US_ticker": "TTWO"
+      },
+      "Netflix Inc": {
+        "US_ticker": "NFLX"
+      },
+      "Rovio Entertainment": {
+        "US_ticker": "ROVIO"
+      },
+      "Zynga Inc": {
+        "US_ticker": "ZNGA"
+      }
+    },
+    "JP_peer_group": {
+      "Sega Sammy Holdings": {
+        "US_ticker": "SGAMY",
+        "JP_ticker": "6460 JP"
+      },
+      "Capcom Co Ltd": {
+        "US_ticker": "CCOEY",
+        "JP_ticker": "9697 JP"
+      },
+      "Konami Group": {
+        "US_ticker": "KNMCY",
+        "JP_ticker": "9766 JP"
+      },
+      "Square Enix Holdings": {
+        "US_ticker": "SQNXF",
+        "JP_ticker": "9684 JP"
+      }
+    }
+  }
+}

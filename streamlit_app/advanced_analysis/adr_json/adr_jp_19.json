@@ -1,0 +1,63 @@
+{
+  "adr_id": "adr_jp_19",
+  "Name": "SHISEIDO LTD",
+  "adr_info": {
+    "US_ticker": "SSDOY",
+    "JP_ticker": "4911 JP",
+    "sector_list": [
+      "Consumer Staples",
+      "Health Care"
+    ],
+    "business_segment_categories": {
+      "Beauty Care": [
+        "Consumer Staples"
+      ],
+      "Personal Care Products": [
+        "Consumer Staples"
+      ],
+      "Fragrances & Makeup": [
+        "Consumer Staples"
+      ],
+      "Skincare": [
+        "Consumer Staples"
+      ],
+      "Health & Wellness": [
+        "Health Care"
+      ]
+    },
+    "US_peer_group": {
+      "Estée Lauder Companies Inc": {
+        "US_ticker": "EL"
+      },
+      "Coty Inc": {
+        "US_ticker": "COTY"
+      },
+      "Revlon Inc": {
+        "US_ticker": "REV"
+      },
+      "The Procter & Gamble Company": {
+        "US_ticker": "PG"
+      },
+      "Unilever PLC": {
+        "US_ticker": "UL"
+      },
+      "Johnson & Johnson": {
+        "US_ticker": "JNJ"
+      }
+    },
+    "JP_peer_group": {
+      "Kao Corporation": {
+        "US_ticker": "KAOOY",
+        "JP_ticker": "4452 JP"
+      },
+      "POLA Orbis Holdings Inc": {
+        "US_ticker": "POLAH",
+        "JP_ticker": "4927 JP"
+      },
+      "KOSÉ Corporation": {
+        "US_ticker": "KOSAY",
+        "JP_ticker": "4922 JP"
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "adr_id": "adr_jp_16",
+  "Name": "MITSUBISHI ELECTRIC",
+  "adr_info": {
+    "US_ticker": "MIELY",
+    "JP_ticker": "6503 JP",
+    "sector_list": [
+      "Industrials",
+      "Information Technology",
+      "Energy"
+    ],
+    "business_segment_categories": {
+      "Energy & Electric Systems": [
+        "Energy",
+        "Industrials"
+      ],
+      "Industrial Automation Systems": [
+        "Industrials",
+        "Information Technology"
+      ],
+      "Information & Communication Systems": [
+        "Information Technology"
+      ],
+      "Electronic Devices": [
+        "Information Technology",
+        "Materials"
+      ],
+      "Home & Building Systems": [
+        "Industrials",
+        "Consumer Discretionary"
+      ],
+      "Transportation Systems": [
+        "Industrials"
+      ]
+    },
+    "US_peer_group": {
+      "Rockwell Automation": {
+        "US_ticker": "ROK"
+      },
+      "ABB Ltd": {
+        "US_ticker": "ABB"
+      },
+      "Honeywell International": {
+        "US_ticker": "HON"
+      },
+      "Emerson Electric": {
+        "US_ticker": "EMR"
+      }
+    },
+    "JP_peer_group": {
+      "Omron Corporation": {
+        "US_ticker": "OMRNY",
+        "JP_ticker": "6645 JP"
+      },
+      "Fanuc Corporation": {
+        "US_ticker": "FANUY",
+        "JP_ticker": "6954 JP"
+      },
+      "Yaskawa Electric": {
+        "US_ticker": "YASKY",
+        "JP_ticker": "6506 JP"
+      },
+      "Keyence Corporation": {
+        "US_ticker": "KYCCF",
+        "JP_ticker": "6861 JP"
+      },
+      "Toshiba Corporation": {
+        "US_ticker": "TOSYY",
+        "JP_ticker": "6502 JP"
+      }
+    }
+  }
+}

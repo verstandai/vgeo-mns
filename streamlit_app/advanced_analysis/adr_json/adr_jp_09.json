@@ -1,0 +1,101 @@
+{
+  "adr_id": "adr_jp_09",
+  "Name": "HITACHI LTD",
+  "adr_info": {
+    "US_ticker": "HTHIY",
+    "JP_ticker": "6501 JP",
+    "sector_list": [
+      "Industrials",
+      "Information Technology",
+      "Materials",
+      "Consumer Discretionary",
+      "Energy"
+    ],
+    "business_segment_categories": {
+      "Social Infrastructure & Industrial Systems": [
+        "Industrials"
+      ],
+      "Information & Telecommunication Systems": [
+        "Information Technology"
+      ],
+      "Construction Machinery": [
+        "Industrials"
+      ],
+      "Automotive Systems": [
+        "Industrials"
+      ],
+      "High Functional Materials & Components": [
+        "Materials"
+      ],
+      "Smart Life & Ecofriendly Systems": [
+        "Consumer Discretionary",
+        "Industrials"
+      ],
+      "Power Systems": [
+        "Energy"
+      ],
+      "Railway Systems": [
+        "Industrials"
+      ],
+      "Digital Solutions": [
+        "Information Technology"
+      ],
+      "Water & Environment Systems": [
+        "Industrials"
+      ],
+      "Digital Platform & Services": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "General Electric": {
+        "US_ticker": "GE"
+      },
+      "Siemens AG": {
+        "US_ticker": "SIEGY"
+      },
+      "Honeywell International": {
+        "US_ticker": "HON"
+      },
+      "Schneider Electric": {
+        "US_ticker": "SBGSF"
+      },
+      "3M Company": {
+        "US_ticker": "MMM"
+      },
+      "ABB Ltd": {
+        "US_ticker": "ABB"
+      }
+    },
+    "JP_peer_group": {
+      "Mitsubishi Heavy Industries": {
+        "US_ticker": "MHVYF",
+        "JP_ticker": "7011 JP"
+      },
+      "Fanuc Corporation": {
+        "US_ticker": "FANUY",
+        "JP_ticker": "6954 JP"
+      },
+      "Yaskawa Electric": {
+        "US_ticker": "YASKY",
+        "JP_ticker": "6506 JP"
+      },
+      "Toshiba Corporation": {
+        "US_ticker": "TOSYY",
+        "JP_ticker": "6502 JP"
+      },
+      "Nippon Steel": {
+        "US_ticker": "NSSNY",
+        "JP_ticker": "5401 JP"
+      },
+      "Komatsu Ltd": {
+        "US_ticker": "KMTUY",
+        "JP_ticker": "6301 JP"
+      },
+      "Fujitsu Limited": {
+        "US_ticker": "FJTSY",
+        "JP_ticker": "6702 JP"
+      }
+    }
+  }
+}

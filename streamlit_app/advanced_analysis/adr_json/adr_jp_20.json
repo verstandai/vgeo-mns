@@ -1,0 +1,73 @@
+{
+  "adr_id": "adr_jp_20",
+  "Name": "SUMITOMO ELEC INDS",
+  "adr_info": {
+    "US_ticker": "SMTOY",
+    "JP_ticker": "5802 JP",
+    "sector_list": [
+      "Industrials",
+      "Information Technology",
+      "Materials"
+    ],
+    "business_segment_categories": {
+      "Automotive": [
+        "Industrials"
+      ],
+      "Information & Communication": [
+        "Information Technology"
+      ],
+      "Electronics": [
+        "Information Technology"
+      ],
+      "Environment & Energy": [
+        "Industrials",
+        "Energy"
+      ],
+      "Industrial Materials": [
+        "Materials"
+      ],
+      "Infocommunications": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "Aptiv PLC": {
+        "US_ticker": "APTV"
+      },
+      "TE Connectivity Ltd.": {
+        "US_ticker": "TEL"
+      },
+      "BorgWarner Inc.": {
+        "US_ticker": "BWA"
+      },
+      "Amphenol Corporation": {
+        "US_ticker": "APH"
+      },
+      "Lear Corporation": {
+        "US_ticker": "LEA"
+      }
+    },
+    "JP_peer_group": {
+      "Denso Corporation": {
+        "US_ticker": "DNZOY",
+        "JP_ticker": "6902 JP"
+      },
+      "Mitsubishi Electric": {
+        "US_ticker": "MIELY",
+        "JP_ticker": "6503 JP"
+      },
+      "Yazaki Corporation": {
+        "US_ticker": "YAZKY",
+        "JP_ticker": "7282 JP"
+      },
+      "Honda Motor": {
+        "US_ticker": "HMC",
+        "JP_ticker": "7267 JP"
+      },
+      "Furukawa Electric Co Ltd": {
+        "US_ticker": "FUWAR",
+        "JP_ticker": "5801 JP"
+      }
+    }
+  }
+}

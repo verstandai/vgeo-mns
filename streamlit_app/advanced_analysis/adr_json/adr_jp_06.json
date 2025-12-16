@@ -1,0 +1,78 @@
+{
+  "adr_id": "adr_jp_06",
+  "Name": "Renesas Electronics Corporation",
+  "adr_info": {
+    "US_ticker": "RNECY",
+    "JP_ticker": "6723 JP",
+    "sector_list": [
+      "Information Technology"
+    ],
+    "business_segment_categories": {
+      "Microcontrollers & Microprocessors": [
+        "Information Technology"
+      ],
+      "Analog & Power Devices": [
+        "Information Technology"
+      ],
+      "Automotive Solutions": [
+        "Information Technology"
+      ],
+      "Industrial & Infrastructure Solutions": [
+        "Information Technology"
+      ],
+      "Social Infrastructure Solutions": [
+        "Information Technology"
+      ],
+      "Memory & Storage": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "NXP Semiconductors": {
+        "US_ticker": "NXPI"
+      },
+      "Infineon Technologies": {
+        "US_ticker": "IFNNY"
+      },
+      "Texas Instruments": {
+        "US_ticker": "TXN"
+      },
+      "Analog Devices": {
+        "US_ticker": "ADI"
+      },
+      "Microchip Technology": {
+        "US_ticker": "MCHP"
+      }
+    },
+    "JP_peer_group": {
+      "Advantest Corp": {
+        "US_ticker": "ATEYY",
+        "JP_ticker": "6857 JP"
+      },
+      "Rohm Co Ltd": {
+        "US_ticker": "ROHCY",
+        "JP_ticker": "6963 JP"
+      },
+      "Tokyo Electron": {
+        "US_ticker": "TOELY",
+        "JP_ticker": "8035 JP"
+      },
+      "Screen Holdings": {
+        "US_ticker": "SCRNY",
+        "JP_ticker": "7735 JP"
+      },
+      "Disco Corp": {
+        "US_ticker": "DSCSY",
+        "JP_ticker": "6146 JP"
+      },
+      "Sumco Corp": {
+        "US_ticker": "SUMCF",
+        "JP_ticker": "3436 JP"
+      },
+      "Shin-Etsu Chemical": {
+        "US_ticker": "SHECY",
+        "JP_ticker": "4063 JP"
+      }
+    }
+  }
+}

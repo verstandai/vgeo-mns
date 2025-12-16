@@ -158,6 +158,6 @@ def render_sidebar(df, manager, data_path):
     # Duplicate Filter
     hide_duplicates = st.sidebar.checkbox("Hide User-Flagged Duplicates", value=True)
     # TODO: Implement actual filtering based on feedback_log.csv
-    
+
     return view_df, selected_ticker
 

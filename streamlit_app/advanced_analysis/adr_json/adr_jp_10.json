@@ -1,0 +1,65 @@
+{
+  "adr_id": "adr_jp_10",
+  "Name": "KOMATSU LTD",
+  "adr_info": {
+    "US_ticker": "KMTUY",
+    "JP_ticker": "6301 JP",
+    "sector_list": [
+      "Industrials",
+      "Information Technology"
+    ],
+    "business_segment_categories": {
+      "Construction, Mining & Utility Equipment": [
+        "Industrials"
+      ],
+      "Industrial Machinery & Components": [
+        "Industrials"
+      ],
+      "Smart Construction Solutions": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "Caterpillar Inc": {
+        "US_ticker": "CAT"
+      },
+      "Deere & Company": {
+        "US_ticker": "DE"
+      },
+      "CNH Industrial N.V.": {
+        "US_ticker": "CNHI"
+      },
+      "Trimble Inc": {
+        "US_ticker": "TRMB"
+      },
+      "Toro Company": {
+        "US_ticker": "TTC"
+      },
+      "Lennox International": {
+        "US_ticker": "LII"
+      }
+    },
+    "JP_peer_group": {
+      "Hitachi Ltd": {
+        "US_ticker": "HTHIY",
+        "JP_ticker": "6501 JP"
+      },
+      "Mitsubishi Heavy Industries": {
+        "US_ticker": "MHVYF",
+        "JP_ticker": "7011 JP"
+      },
+      "Kubota Corporation": {
+        "US_ticker": "KUBTY",
+        "JP_ticker": "6326 JP"
+      },
+      "Toyo Engineering Corporation": {
+        "US_ticker": "TOYOF",
+        "JP_ticker": "6330 JP"
+      },
+      "Fanuc Corporation": {
+        "US_ticker": "FANUY",
+        "JP_ticker": "6954 JP"
+      }
+    }
+  }
+}

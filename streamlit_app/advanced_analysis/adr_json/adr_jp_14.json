@@ -1,0 +1,57 @@
+{
+  "adr_id": "adr_jp_14",
+  "Name": "ADVANTEST CORP",
+  "adr_info": {
+    "US_ticker": "ATEYY",
+    "JP_ticker": "6857 JP",
+    "sector_list": [
+      "Information Technology"
+    ],
+    "business_segment_categories": {
+      "Semiconductor and Component Test Systems": [
+        "Information Technology"
+      ],
+      "Mechatronics Systems": [
+        "Information Technology"
+      ],
+      "Service & Support": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "Teradyne Inc": {
+        "US_ticker": "TER"
+      },
+      "KLA Corporation": {
+        "US_ticker": "KLAC"
+      },
+      "Cohu Inc": {
+        "US_ticker": "COHU"
+      },
+      "National Instruments": {
+        "US_ticker": "NATI"
+      },
+      "Keysight Technologies": {
+        "US_ticker": "KEYS"
+      }
+    },
+    "JP_peer_group": {
+      "Tokyo Electron": {
+        "US_ticker": "TOELY",
+        "JP_ticker": "8035 JP"
+      },
+      "Disco Corporation": {
+        "US_ticker": "DSCSY",
+        "JP_ticker": "6146 JP"
+      },
+      "Rohm Co Ltd": {
+        "US_ticker": "ROHCY",
+        "JP_ticker": "6963 JP"
+      },
+      "Fanuc Corporation": {
+        "US_ticker": "FANUY",
+        "JP_ticker": "6954 JP"
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "adr_id": "adr_jp_05",
+  "Name": "MITSUBISHI UFJ FINL",
+  "adr_info": {
+    "US_ticker": "MUFG",
+    "JP_ticker": "8306 JP",
+    "sector_list": [
+      "Financials"
+    ],
+    "business_segment_categories": {
+      "Retail Banking": [
+        "Financials"
+      ],
+      "Corporate Banking": [
+        "Financials"
+      ],
+      "Trust Banking": [
+        "Financials"
+      ],
+      "Investment Banking & Trading": [
+        "Financials"
+      ],
+      "Asset Management": [
+        "Financials"
+      ],
+      "Other Financial Services": [
+        "Financials"
+      ]
+    },
+    "US_peer_group": {
+      "JPMorgan Chase & Co.": {
+        "US_ticker": "JPM"
+      },
+      "Bank of America": {
+        "US_ticker": "BAC"
+      },
+      "Wells Fargo & Company": {
+        "US_ticker": "WFC"
+      },
+      "Citigroup Inc.": {
+        "US_ticker": "C"
+      },
+      "Goldman Sachs Group": {
+        "US_ticker": "GS"
+      },
+      "Morgan Stanley": {
+        "US_ticker": "MS"
+      },
+      "U.S. Bancorp": {
+        "US_ticker": "USB"
+      },
+      "PNC Financial Services": {
+        "US_ticker": "PNC"
+      }
+    },
+    "JP_peer_group": {
+      "Sumitomo Mitsui Financial Group": {
+        "US_ticker": "SMFG",
+        "JP_ticker": "8316 JP"
+      },
+      "Mizuho Financial Group": {
+        "US_ticker": "MFG",
+        "JP_ticker": "8411 JP"
+      },
+      "Nomura Holdings": {
+        "US_ticker": "NMR",
+        "JP_ticker": "8604 JP"
+      },
+      "Dai-ichi Life Holdings": {
+        "US_ticker": "DLICY",
+        "JP_ticker": "8750 JP"
+      },
+      "Japan Post Holdings": {
+        "US_ticker": "JPHLY",
+        "JP_ticker": "6178 JP"
+      }
+    }
+  }
+}

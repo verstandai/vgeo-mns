@@ -1,0 +1,65 @@
+{
+  "adr_id": "adr_jp_07",
+  "Name": "CHUGAI PHARMACEUTIC",
+  "adr_info": {
+    "US_ticker": "CHGCY",
+    "JP_ticker": "4519 JP",
+    "sector_list": [
+      "Health Care"
+    ],
+    "business_segment_categories": {
+      "Pharmaceuticals": [
+        "Health Care"
+      ],
+      "Diagnostic": [
+        "Health Care"
+      ]
+    },
+    "US_peer_group": {
+      "Amgen Inc": {
+        "US_ticker": "AMGN"
+      },
+      "Biogen Inc": {
+        "US_ticker": "BIIB"
+      },
+      "Gilead Sciences Inc": {
+        "US_ticker": "GILD"
+      },
+      "Regeneron Pharmaceuticals": {
+        "US_ticker": "REGN"
+      },
+      "Vertex Pharmaceuticals": {
+        "US_ticker": "VRTX"
+      },
+      "Moderna Inc": {
+        "US_ticker": "MRNA"
+      }
+    },
+    "JP_peer_group": {
+      "Takeda Pharmaceutical": {
+        "US_ticker": "TAK",
+        "JP_ticker": "4502 JP"
+      },
+      "Astellas Pharma": {
+        "US_ticker": "ALPMY",
+        "JP_ticker": "4503 JP"
+      },
+      "Eisai Co Ltd": {
+        "US_ticker": "ESALY",
+        "JP_ticker": "4523 JP"
+      },
+      "Otsuka Holdings": {
+        "US_ticker": "OTSKY",
+        "JP_ticker": "4578 JP"
+      },
+      "Daiichi Sankyo Co": {
+        "US_ticker": "DSNKY",
+        "JP_ticker": "4568 JP"
+      },
+      "Shionogi & Co": {
+        "US_ticker": "SGIOY",
+        "JP_ticker": "4507 JP"
+      }
+    }
+  }
+}

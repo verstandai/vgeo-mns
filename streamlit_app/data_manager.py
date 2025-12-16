@@ -10,6 +10,7 @@ class DataManager:
         self.data_path = data_path
         self.feedback_path = feedback_path
         self.market_data_cache = {}
+        
         # Initialize Favorites
         self.favorites_file = os.path.join(os.path.dirname(__file__), 'favorites.json')
         self.favorites = self.load_favorites()
@@ -557,3 +558,65 @@ class DataManager:
             return len(pd.read_csv(self.feedback_path))
         except:
             return 0
+
+    def export_market_data(self, df, output_path):
+        """
+        Merges calculated market metrics into the original dataframe and exports to CSV.
+        """
+        export_records = []
+        
+        for index, row in df.iterrows():
+            # Retrieve cached metrics or calculate if missing (though usually cached by render loop)
+            # We use the same key generation logic implicitly via get_market_data
+            metrics = self.get_market_data(
+                row['us_ticker_name'], 
+                row['parsed_date'],
+                local_ticker=row.get('local_ticker'),
+                index_name=row.get('index'),
+                sentiment_score=row.get('news_sentiment'),
+                news_time_str=row.get('timestamp')
+            )
+            
+            record = row.to_dict()
+            
+            # Flatten select metrics into the record
+            if metrics:
+                record['market_car_3d'] = metrics.get('car_3d')
+                record['market_car_pre_3d'] = metrics.get('car_pre_3d')
+                record['market_sentiment_alignment'] = metrics.get('sentiment_alignment')
+                record['market_reaction_day'] = metrics.get('reaction_day_used')
+                record['market_impact_strength'] = metrics.get('impact_strength')
+                
+                # T+0 Data
+                t0 = metrics.get('T+0', {})
+                record['market_t0_close'] = t0.get('close')
+                record['market_t0_stock_pct_change'] = t0.get('pct_change_day')
+                record['market_t0_index_close'] = t0.get('index_close')
+                record['market_t0_index_pct_change'] = t0.get('index_pct_change')
+                record['market_t0_relative_index_change'] = t0.get('relative_change')
+                record['market_t0_gap_pct'] = t0.get('gap_pct')
+                record['market_t0_stock_intraday'] = t0.get('intraday_change')
+                record['market_t0_index_intraday'] = t0.get('index_intraday')
+                record['market_t0_sigma_move'] = t0.get('sigma_move')
+                record['market_t0_volume_ratio'] = t0.get('volume_rel')
+                record['market_t0_volume_z'] = t0.get('volume_z_score')
+                
+                # T+1 Data
+                t1 = metrics.get('T+1', {})
+                record['market_t1_close'] = t1.get('close')
+                record['market_t1_stock_pct_change'] = t1.get('pct_change_day')
+                record['market_t1_index_close'] = t1.get('index_close')
+                record['market_t1_index_pct_change'] = t1.get('index_pct_change')
+                record['market_t1_relative_index_change'] = t1.get('relative_change')
+                record['market_t1_gap_pct'] = t1.get('gap_pct')
+                record['market_t1_stock_intraday'] = t1.get('intraday_change')
+                record['market_t1_index_intraday'] = t1.get('index_intraday')
+                record['market_t1_sigma_move'] = t1.get('sigma_move')
+                record['market_t1_volume_ratio'] = t1.get('volume_rel')
+                record['market_t1_volume_z'] = t1.get('volume_z_score')
+
+            export_records.append(record)
+            
+        export_df = pd.DataFrame(export_records)
+        export_df.to_csv(output_path, index=False, encoding='utf-8-sig')
+        return output_path

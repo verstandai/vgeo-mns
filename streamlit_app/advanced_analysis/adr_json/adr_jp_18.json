@@ -1,0 +1,72 @@
+{
+  "adr_id": "adr_jp_18",
+  "Name": "SHIN-ETSU CHEM",
+  "adr_info": {
+    "US_ticker": "SHECY",
+    "JP_ticker": "4063 JP",
+    "sector_list": [
+      "Materials",
+      "Information Technology",
+      "Health Care"
+    ],
+    "business_segment_categories": {
+      "Silicone": [
+        "Materials"
+      ],
+      "PVC & Vinyl Products": [
+        "Materials"
+      ],
+      "Semiconductor Silicon Wafers": [
+        "Information Technology"
+      ],
+      "Electronic Materials": [
+        "Information Technology"
+      ],
+      "Pharmaceuticals": [
+        "Health Care"
+      ]
+    },
+    "US_peer_group": {
+      "3M Company": {
+        "US_ticker": "MMM"
+      },
+      "DuPont de Nemours, Inc.": {
+        "US_ticker": "DD"
+      },
+      "Linde plc": {
+        "US_ticker": "LIN"
+      },
+      "Cabot Corporation": {
+        "US_ticker": "CBT"
+      },
+      "Eastman Chemical Company": {
+        "US_ticker": "EMN"
+      },
+      "Celanese Corporation": {
+        "US_ticker": "CE"
+      }
+    },
+    "JP_peer_group": {
+      "Asahi Kasei Corporation": {
+        "US_ticker": "AHKSY",
+        "JP_ticker": "3407 JP"
+      },
+      "Nippon Steel Corporation": {
+        "US_ticker": "NPSGY",
+        "JP_ticker": "5401 JP"
+      },
+      "Daikin Industries": {
+        "US_ticker": "DKILY",
+        "JP_ticker": "6367 JP"
+      },
+      "Toray Industries": {
+        "US_ticker": "TRYIY",
+        "JP_ticker": "3402 JP"
+      },
+      "Sumitomo Chemical": {
+        "US_ticker": "SMTOY",
+        "JP_ticker": "4005 JP"
+      }
+    }
+  }
+}

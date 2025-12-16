@@ -1,0 +1,57 @@
+{
+  "adr_id": "adr_jp_12",
+  "Name": "HOYA CORP",
+  "adr_info": {
+    "US_ticker": "HOCPY",
+    "JP_ticker": "7741 JP",
+    "sector_list": [
+      "Health Care",
+      "Information Technology",
+      "Materials"
+    ],
+    "business_segment_categories": {
+      "Optical & Imaging Equipment": [
+        "Information Technology"
+      ],
+      "Electronics & Devices": [
+        "Materials",
+        "Information Technology"
+      ],
+      "Healthcare & Life Science": [
+        "Health Care"
+      ],
+      "Industrial Ophthalmology": [
+        "Health Care"
+      ]
+    },
+    "US_peer_group": {
+      "CooperVision Inc": {
+        "US_ticker": "COO"
+      },
+      "Johnson & Johnson Vision Care": {
+        "US_ticker": "JNJ"
+      },
+      "Novartis AG": {
+        "US_ticker": "NVS"
+      }
+    },
+    "JP_peer_group": {
+      "Nidek Co Ltd": {
+        "US_ticker": "NJDKY",
+        "JP_ticker": "6628 JP"
+      },
+      "Olympus Corporation": {
+        "US_ticker": "OCPNY",
+        "JP_ticker": "7733 JP"
+      },
+      "Canon Inc.": {
+        "US_ticker": "CAJNY",
+        "JP_ticker": "7751 JP"
+      },
+      "Santen Pharmaceutical": {
+        "US_ticker": "STNCY",
+        "JP_ticker": "4527 JP"
+      }
+    }
+  }
+}

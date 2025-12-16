@@ -1,0 +1,66 @@
+{
+  "adr_id": "adr_jp_08",
+  "Name": "SMC CORP",
+  "adr_info": {
+    "US_ticker": "SMCAY",
+    "JP_ticker": "6273 JP",
+    "sector_list": [
+      "Industrials",
+      "Machinery"
+    ],
+    "business_segment_categories": {
+      "Pneumatic Control Systems": [
+        "Industrials"
+      ],
+      "Electric Automation Equipment": [
+        "Industrials"
+      ],
+      "Other Industrial Products": [
+        "Industrials"
+      ]
+    },
+    "US_peer_group": {
+      "Rockwell Automation": {
+        "US_ticker": "ROK"
+      },
+      "Emerson Electric": {
+        "US_ticker": "EMR"
+      },
+      "Parker-Hannifin": {
+        "US_ticker": "PH"
+      },
+      "Fortive Corporation": {
+        "US_ticker": "FTV"
+      },
+      "Honeywell International": {
+        "US_ticker": "HON"
+      }
+    },
+    "JP_peer_group": {
+      "Keyence Corporation": {
+        "US_ticker": "KYCCF",
+        "JP_ticker": "6861 JP"
+      },
+      "Fanuc Corporation": {
+        "US_ticker": "FANUY",
+        "JP_ticker": "6954 JP"
+      },
+      "Nachi-Fujikoshi": {
+        "US_ticker": "NAFJF",
+        "JP_ticker": "6474 JP"
+      },
+      "Yaskawa Electric Corporation": {
+        "US_ticker": "YASKY",
+        "JP_ticker": "6506 JP"
+      },
+      "Omron Corporation": {
+        "US_ticker": "OMRNY",
+        "JP_ticker": "6645 JP"
+      },
+      "Toshiba Machine": {
+        "US_ticker": "TSMCF",
+        "JP_ticker": "6104 JP"
+      }
+    }
+  }
+}

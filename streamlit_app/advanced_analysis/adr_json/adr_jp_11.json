@@ -1,0 +1,83 @@
+{
+  "adr_id": "adr_jp_11",
+  "Name": "MITSUBISHI HEAVY INDUSTRIES",
+  "adr_info": {
+    "US_ticker": "MHVIY",
+    "JP_ticker": "7011 JP",
+    "sector_list": [
+      "Industrials",
+      "Energy",
+      "Materials"
+    ],
+    "business_segment_categories": {
+      "Aerospace Systems": [
+        "Industrials"
+      ],
+      "Energy Systems & Solutions": [
+        "Energy",
+        "Industrials"
+      ],
+      "Transportation Systems": [
+        "Industrials"
+      ],
+      "Machinery, Equipment & Infrastructure": [
+        "Industrials"
+      ],
+      "Engine & Turbocharger": [
+        "Industrials"
+      ],
+      "Precision Machinery & Parts": [
+        "Materials"
+      ]
+    },
+    "US_peer_group": {
+      "General Electric": {
+        "US_ticker": "GE"
+      },
+      "Honeywell International": {
+        "US_ticker": "HON"
+      },
+      "Caterpillar Inc": {
+        "US_ticker": "CAT"
+      },
+      "United Technologies Corporation": {
+        "US_ticker": "RTX"
+      },
+      "3M Company": {
+        "US_ticker": "MMM"
+      },
+      "Emerson Electric": {
+        "US_ticker": "EMR"
+      },
+      "ABB Ltd": {
+        "US_ticker": "ABB"
+      }
+    },
+    "JP_peer_group": {
+      "Hitachi Ltd": {
+        "US_ticker": "HTHIY",
+        "JP_ticker": "6501 JP"
+      },
+      "IHI Corporation": {
+        "US_ticker": "IHICF",
+        "JP_ticker": "7013 JP"
+      },
+      "Kawasaki Heavy Industries": {
+        "US_ticker": "KWHIY",
+        "JP_ticker": "7012 JP"
+      },
+      "Toshiba Corporation": {
+        "US_ticker": "TOSYY",
+        "JP_ticker": "6502 JP"
+      },
+      "Kubota Corporation": {
+        "US_ticker": "KUBTY",
+        "JP_ticker": "6326 JP"
+      },
+      "Yamaha Motor": {
+        "US_ticker": "YAMCY",
+        "JP_ticker": "7272 JP"
+      }
+    }
+  }
+}

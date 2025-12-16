@@ -1,0 +1,79 @@
+{
+  "adr_id": "adr_jp_17",
+  "Name": "MARUBENI CORP",
+  "adr_info": {
+    "US_ticker": "MARUY",
+    "JP_ticker": "8002 JP",
+    "sector_list": [
+      "Industrials",
+      "Materials",
+      "Consumer Discretionary",
+      "Energy"
+    ],
+    "business_segment_categories": {
+      "Energy": [
+        "Energy"
+      ],
+      "Metals & Mineral Resources": [
+        "Materials"
+      ],
+      "Chemicals": [
+        "Materials"
+      ],
+      "Food & Consumer Products": [
+        "Consumer Discretionary"
+      ],
+      "Transportation & Industrial Machinery": [
+        "Industrials"
+      ],
+      "Power Solution": [
+        "Energy",
+        "Industrials"
+      ],
+      "Infrastructure & Environment": [
+        "Industrials"
+      ],
+      "Lifestyle Materials & Services": [
+        "Consumer Discretionary"
+      ],
+      "Finance & Leasing": [
+        "Financials"
+      ]
+    },
+    "US_peer_group": {
+      "Midland Company": {
+        "US_ticker": "ADM"
+      },
+      "Bunge Limited": {
+        "US_ticker": "BG"
+      },
+      "Marathon Petroleum Corporation": {
+        "US_ticker": "MPC"
+      },
+      "ExxonMobil Corporation": {
+        "US_ticker": "XOM"
+      },
+      "ConocoPhillips": {
+        "US_ticker": "COP"
+      }
+    },
+    "JP_peer_group": {
+      "Mitsubishi Corporation": {
+        "US_ticker": "MSBHF",
+        "JP_ticker": "8058 JP"
+      },
+      "Mitsui & Co.": {
+        "US_ticker": "MITSF",
+        "JP_ticker": "8031 JP"
+      },
+      "Itochu Corporation": {
+        "US_ticker": "ITOCY",
+        "JP_ticker": "8001 JP"
+      },
+      "Sumitomo Corporation": {
+        "US_ticker": "SSUMY",
+        "JP_ticker": "8053 JP"
+      }
+    }
+  }
+}

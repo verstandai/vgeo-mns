@@ -1,0 +1,83 @@
+{
+  "adr_id": "adr_jp_04",
+  "Name": "SUZUKI MOTOR CORP",
+  "adr_info": {
+    "US_ticker": "SZKMY",
+    "JP_ticker": "7269 JP",
+    "sector_list": [
+      "Consumer Discretionary",
+      "Industrials",
+      "Financials"
+    ],
+    "business_segment_categories": {
+      "Automobiles": [
+        "Consumer Discretionary"
+      ],
+      "Motorcycles & Outboard Motors": [
+        "Consumer Discretionary"
+      ],
+      "Financial Services": [
+        "Financials"
+      ],
+      "Engineering & Other": [
+        "Industrials"
+      ]
+    },
+    "US_peer_group": {
+      "General Motors Company": {
+        "US_ticker": "GM"
+      },
+      "Ford Motor Company": {
+        "US_ticker": "F"
+      },
+      "Stellantis": {
+        "US_ticker": "STLA"
+      },
+      "Tesla Inc.": {
+        "US_ticker": "TSLA"
+      },
+      "Harley-Davidson Inc": {
+        "US_ticker": "HOG"
+      },
+      "Polaris Inc": {
+        "US_ticker": "PII"
+      },
+      "BRP Inc": {
+        "US_ticker": "DOOO"
+      },
+      "Thor Industries Inc": {
+        "US_ticker": "THO"
+      }
+    },
+    "JP_peer_group": {
+      "Honda Motor": {
+        "US_ticker": "HMC",
+        "JP_ticker": "7267 JP"
+      },
+      "Yamaha Motor": {
+        "US_ticker": "YAMCY",
+        "JP_ticker": "7272 JP"
+      },
+      "Kawasaki Heavy Industries": {
+        "US_ticker": "KWHIY",
+        "JP_ticker": "7012 JP"
+      },
+      "Toyota Motor": {
+        "US_ticker": "TM",
+        "JP_ticker": "7203 JP"
+      },
+      "Mitsubishi Motors": {
+        "US_ticker": "MMTOY",
+        "JP_ticker": "7211 JP"
+      },
+      "Tokio Marine Holdings": {
+        "US_ticker": "TKOMY",
+        "JP_ticker": "8766 JP"
+      },
+      "Mitsubishi UFJ Financial Group": {
+        "US_ticker": "MUFG",
+        "JP_ticker": "8306 JP"
+      }
+    }
+  }
+}

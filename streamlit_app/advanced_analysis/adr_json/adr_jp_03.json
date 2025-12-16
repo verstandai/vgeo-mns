@@ -1,0 +1,70 @@
+{
+  "adr_id": "adr_jp_03",
+  "Name": "TOYOTA MOTOR CORP",
+  "adr_info": {
+    "US_ticker": "TM",
+    "JP_ticker": "7203 JP",
+    "sector_list": [
+      "Consumer Discretionary",
+      "Industrials",
+      "Financials"
+    ],
+    "business_segment_categories": {
+      "Automotive": [
+        "Consumer Discretionary"
+      ],
+      "Financial Services": [
+        "Financials"
+      ],
+      "Connected Services": [
+        "Consumer Discretionary"
+      ]
+    },
+    "US_peer_group": {
+      "General Motors Company": {
+        "US_ticker": "GM"
+      },
+      "Ford Motor Company": {
+        "US_ticker": "F"
+      },
+      "Chrysler": {
+        "US_ticker": "STLA"
+      },
+      "Tesla Inc.": {
+        "US_ticker": "TSLA"
+      },
+      "Ally Financial": {
+        "US_ticker": "ALLY"
+      },
+      "Santander Consumer USA": {
+        "US_ticker": "SNDR"
+      }
+    },
+    "JP_peer_group": {
+      "Suzuki Motor": {
+        "US_ticker": "SZKMY",
+        "JP_ticker": "7269 JP"
+      },
+      "Honda Motor": {
+        "US_ticker": "HMC",
+        "JP_ticker": "7267 JP"
+      },
+      "Nissan Motor": {
+        "US_ticker": "NSANY",
+        "JP_ticker": "7201 JP"
+      },
+      "Mitsubishi Motors": {
+        "US_ticker": "MMTOY",
+        "JP_ticker": "7211 JP"
+      },
+      "Dai-ichi Life Holdings": {
+        "US_ticker": "DLICY",
+        "JP_ticker": "8750 JP"
+      },
+      "SoftBank Group": {
+        "US_ticker": "SFTBY",
+        "JP_ticker": "9984 JP"
+      }
+    }
+  }
+}

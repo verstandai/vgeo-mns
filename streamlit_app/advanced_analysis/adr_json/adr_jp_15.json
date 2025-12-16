@@ -1,0 +1,59 @@
+{
+  "adr_id": "adr_jp_15",
+  "Name": "FANUC CORP",
+  "adr_info": {
+    "US_ticker": "FANUY",
+    "JP_ticker": "6954 JP",
+    "sector_list": [
+      "Industrials",
+      "Information Technology"
+    ],
+    "business_segment_categories": {
+      "Factory Automation Systems": [
+        "Industrials"
+      ],
+      "Robotics": [
+        "Industrials"
+      ],
+      "Robomachine": [
+        "Industrials"
+      ],
+      "Service & Support": [
+        "Information Technology"
+      ]
+    },
+    "US_peer_group": {
+      "Rockwell Automation": {
+        "US_ticker": "ROK"
+      },
+      "ABB Ltd": {
+        "US_ticker": "ABB"
+      },
+      "Emerson Electric": {
+        "US_ticker": "EMR"
+      }
+    },
+    "JP_peer_group": {
+      "Yaskawa Electric": {
+        "US_ticker": "YASKY",
+        "JP_ticker": "6506 JP"
+      },
+      "Kawasaki Heavy Industries": {
+        "US_ticker": "KWHIY",
+        "JP_ticker": "7012 JP"
+      },
+      "Mitsubishi Electric": {
+        "US_ticker": "MIELY",
+        "JP_ticker": "6503 JP"
+      },
+      "Omron Corporation": {
+        "US_ticker": "OMRNY",
+        "JP_ticker": "6645 JP"
+      },
+      "Keyence Corporation": {
+        "US_ticker": "KYCCF",
+        "JP_ticker": "6861 JP"
+      }
+    }
+  }
+}
