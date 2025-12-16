@@ -35,7 +35,8 @@ def render_sidebar(df, manager, data_path):
     st.sidebar.markdown("---")
 
     # Ticker Filter
-    tickers = ["All Tickers"] + sorted(df['us_ticker_name'].unique().tolist())
+    # Ticker Filter
+    tickers = ["All Tickers"] + sorted(df['us_ticker_name'].dropna().astype(str).unique().tolist())
     selected_ticker = st.sidebar.selectbox("Select Ticker", tickers, index=0)
     
     # Filter DF by Ticker (the downstream df will be ticker_df)

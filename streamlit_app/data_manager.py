@@ -93,11 +93,23 @@ class DataManager:
         try:
             # Determine Ticker Symbol
             target_ticker = ticker
-            if local_ticker:
+            
+            # Helper to check validity
+            def is_valid_str(s):
+                return s is not None and pd.notnull(s) and str(s).strip() != ''
+
+            if local_ticker and is_valid_str(local_ticker):
                 if str(local_ticker).isdigit():
                     target_ticker = f"{local_ticker}.T"
                 else:
-                    target_ticker = local_ticker
+                    target_ticker = str(local_ticker)
+            
+            if not is_valid_str(target_ticker):
+                # If we still don't have a valid ticker, we can't fetch data
+                raise ValueError(f"Invalid ticker: {ticker} / {local_ticker}")
+
+            # Ensure strict string type for yfinance
+            target_ticker = str(target_ticker).upper().strip()
             
             # Determine Index Ticker
             index_ticker = "^TOPX" # Default
