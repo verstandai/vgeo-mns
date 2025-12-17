@@ -32,6 +32,32 @@ def get_manager():
     """Initializes and caches the DataManager."""
     return DataManager(DATA_PATH, FEEDBACK_PATH)
 
+def load_user_guide():
+        
+    # --- Help Button ---
+    try:
+        # Resolve PDF Path corresponding to vgeo-mns/MNS_Quick_User_Guide.pdf
+        # This file is in vgeo-mns/streamlit_app/app.py -> dirname -> streamlit_app -> dirname -> vgeo-mns
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pdf_path = os.path.join(base_dir, "MNS_Quick_User_Guide.pdf")
+        
+        if os.path.exists(pdf_path):
+            # Add some vertical padding to align with the title
+            st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+            with open(pdf_path, "rb") as f:
+                st.download_button(
+                    label="Download User Guide",
+                    data=f,
+                    file_name="MNS_Quick_User_Guide.pdf",
+                    mime="application/pdf",
+                    help="Download the Quick User Guide"
+                )
+    except Exception as e:
+        print(f"Error loading user guide: {e}")
+        pass
+
+    return
+
 # --- Main Execution ---
 def main():
     # Load CSS and initialize DataManager
@@ -43,9 +69,15 @@ def main():
     
     # Render the sidebar and get the selected ticker (filtered data)
     view_df, selected_ticker = render_filters.render_sidebar(df, manager, DATA_PATH)
+
+    # Layout: Title on Left, User Guide on Right
+    col_title, col_guide = st.columns([6, 1])
     
-    # Render the title (selected ticker)
-    st.title(f"News Analysis: {selected_ticker}")
+    with col_title:
+        st.title(f"News Analysis: {selected_ticker}")
+        
+    with col_guide:
+        load_user_guide()
 
     # Render top metrics (displaying aligned events, bullish events, bearish events)
     render_cards.render_metrics(view_df, manager)
