@@ -105,6 +105,7 @@ def render_sidebar(df, manager, data_path):
         except:
             return "Neutral"
 
+    view_df = view_df.copy()
     view_df['sentiment_category'] = view_df['news_sentiment'].apply(categorize_sentiment)
     
     all_sentiments = ["Positive", "Negative", "Neutral"]
@@ -114,8 +115,6 @@ def render_sidebar(df, manager, data_path):
 
     # Alignment Filter
     if not view_df.empty:
-        # Create a copy to avoid SettingWithCopyWarning when adding new column
-        view_df = view_df.copy()
         
         def get_alignment_status(row):
             md = manager.get_market_data(
