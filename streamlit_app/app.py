@@ -46,7 +46,7 @@ def load_user_guide():
             st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
             with open(pdf_path, "rb") as f:
                 st.download_button(
-                    label="❓ Download User Guide",
+                    label="📥 User Guide",
                     data=f,
                     file_name="MNS_Quick_User_Guide.pdf",
                     mime="application/pdf",
