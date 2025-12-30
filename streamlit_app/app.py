@@ -32,6 +32,15 @@ def get_manager():
     """Initializes and caches the DataManager."""
     return DataManager(DATA_PATH, FEEDBACK_PATH)
 
+@st.cache_data  # Cache indefinitely (max time) - only clears on app restart
+def load_data_cached(_manager):
+    """
+    Loads and caches data from BigQuery or CSV.
+    The underscore prefix on _manager prevents Streamlit from hashing it.
+    Data stays cached until app restart or manual cache clear.
+    """
+    return _manager.load_data()
+
 def load_user_guide():
         
     # --- Help Button ---
@@ -64,18 +73,18 @@ def main():
     load_css()
     manager = get_manager()
 
-    # Load the CSV file using DataManager
-    df = manager.load_data()
+    # Load data using cached function (queries BigQuery once, then uses cache)
+    df = load_data_cached(manager)
     
     # Render the sidebar and get the selected ticker (filtered data)
     view_df, selected_ticker = render_filters.render_sidebar(df, manager, DATA_PATH)
 
-    # Layout: Title on Left, User Guide on Right
+    # Header row: Title + User Guide
     col_title, col_guide = st.columns([6, 1])
-    
+
     with col_title:
         st.title(f"News Analysis: {selected_ticker}")
-        
+
     with col_guide:
         load_user_guide()
 

@@ -4,8 +4,21 @@ import os
 import json
 import numpy as np
 from datetime import datetime, timedelta
+from google.cloud import bigquery  # NEW
+from dotenv import load_dotenv  # NEW
+
+load_dotenv()
 
 class DataManager:
+    # def __init__(self, data_path, feedback_path):
+    #     self.data_path = data_path
+    #     self.feedback_path = feedback_path
+    #     self.market_data_cache = {}
+        
+    #     # Initialize Favorites
+    #     self.favorites_file = os.path.join(os.path.dirname(__file__), 'favorites.json')
+    #     self.favorites = self.load_favorites()
+    
     def __init__(self, data_path, feedback_path):
         self.data_path = data_path
         self.feedback_path = feedback_path
@@ -14,28 +27,104 @@ class DataManager:
         # Initialize Favorites
         self.favorites_file = os.path.join(os.path.dirname(__file__), 'favorites.json')
         self.favorites = self.load_favorites()
+        
+        # Check if BigQuery mode is enabled
+        self.use_bigquery = os.getenv("USE_BIGQUERY", "false").lower() == "true"
+        
+        # BigQuery configuration (only used if use_bigquery=True)
+        if self.use_bigquery:
+            self.project_id = os.getenv("GCP_PROJECT", "vgeo-prod")
+            self.dataset_id = os.getenv("BQ_DATASET", "mns_demo_enriched")
+            self.table_id = os.getenv("BQ_TABLE", "enriched_articles")
+            self.bq_client = bigquery.Client(project=self.project_id)
+            print(f"✅ BigQuery mode enabled: {self.project_id}.{self.dataset_id}.{self.table_id}")
+        else:
+            print(f"📁 CSV mode enabled: {self.data_path}")
+
+    # def load_data(self):
+    #     """Loads the CSV data."""
+    #     if not os.path.exists(self.data_path):
+    #         return pd.DataFrame()
+        
+    #     # 1. Load Raw Data
+    #     df = pd.read_csv(self.data_path)
+        
+    #     # 2. Parse Dates (Handle 11-Nov -> 2025-11-11)
+    #     def parse_date(d):
+    #         if pd.isna(d): return pd.NaT
+    #         s = str(d).strip()
+    #         # Try MM/DD/YY (Old)
+    #         try: return datetime.strptime(s, '%m/%d/%y').date()
+    #         except: pass
+    #         # Try DD-Mon -> Assume 2025
+    #         try: return datetime.strptime(f"{s}-2025", '%d-%b-%Y').date()
+    #         except: pass
+    #         return pd.NaT
+
+    #     df['parsed_date'] = df['date'].apply(parse_date)
+        
+    #     # 3. Convert 'date' column to desired '11/17/2025' string format
+    #     df['date'] = df['parsed_date'].apply(lambda x: x.strftime('%m/%d/%Y') if pd.notnull(x) else '')
+
+    #     # Sort by Date (Desc)
+    #     if 'parsed_date' in df.columns:
+    #         df = df.sort_values(by=['parsed_date'], ascending=False)
+
+    #     return df
 
     def load_data(self):
-        """Loads the CSV data."""
-        if not os.path.exists(self.data_path):
-            return pd.DataFrame()
+        """Loads data from BigQuery or CSV based on USE_BIGQUERY environment variable."""
         
-        # 1. Load Raw Data
-        df = pd.read_csv(self.data_path)
+        # Option 1: Load from BigQuery
+        if self.use_bigquery:
+            try:
+                query = f"""
+                SELECT *
+                FROM `{self.project_id}.{self.dataset_id}.{self.table_id}`
+                ORDER BY date DESC
+                """
+                print(f"🔍 Querying BigQuery: {self.project_id}.{self.dataset_id}.{self.table_id}")
+                df = self.bq_client.query(query).to_dataframe()
+                print(f"✅ Loaded {len(df)} rows from BigQuery")
+                
+                # Convert datetime columns from strings to datetime objects
+                if 'timestamp' in df.columns:
+                    df['timestamp'] = pd.to_datetime(df['timestamp'], format='mixed', errors='coerce', utc=True)
+                
+                if 'parsed_date' in df.columns:
+                    df['parsed_date'] = pd.to_datetime(df['parsed_date'], format='mixed', errors='coerce', utc=True)
+                    # Convert to date objects (not datetime) to match CSV behavior
+                    df['parsed_date'] = df['parsed_date'].dt.date
+                
+            except Exception as e:
+                print(f"❌ BigQuery error: {e}")
+                print(f"⚠️ Falling back to CSV: {self.data_path}")
+                df = pd.read_csv(self.data_path)
         
-        # 2. Parse Dates (Handle 11-Nov -> 2025-11-11)
-        def parse_date(d):
-            if pd.isna(d): return pd.NaT
-            s = str(d).strip()
-            # Try MM/DD/YY (Old)
-            try: return datetime.strptime(s, '%m/%d/%y').date()
-            except: pass
-            # Try DD-Mon -> Assume 2025
-            try: return datetime.strptime(f"{s}-2025", '%d-%b-%Y').date()
-            except: pass
-            return pd.NaT
+        # Option 2: Load from CSV
+        else:
+            if not os.path.exists(self.data_path):
+                print(f"❌ CSV file not found: {self.data_path}")
+                return pd.DataFrame()
+            
+            print(f"📁 Loading CSV: {self.data_path}")
+            df = pd.read_csv(self.data_path)
+            print(f"✅ Loaded {len(df)} rows from CSV")
+        
+        # 2. Parse Dates (only needed for CSV or if date column is string)
+        if 'parsed_date' not in df.columns or df['parsed_date'].isna().all():
+            def parse_date(d):
+                if pd.isna(d): return pd.NaT
+                s = str(d).strip()
+                # Try MM/DD/YY (Old)
+                try: return datetime.strptime(s, '%m/%d/%y').date()
+                except: pass
+                # Try DD-Mon -> Assume 2025
+                try: return datetime.strptime(f"{s}-2025", '%d-%b-%Y').date()
+                except: pass
+                return pd.NaT
 
-        df['parsed_date'] = df['date'].apply(parse_date)
+            df['parsed_date'] = df['date'].apply(parse_date)
         
         # 3. Convert 'date' column to desired '11/17/2025' string format
         df['date'] = df['parsed_date'].apply(lambda x: x.strftime('%m/%d/%Y') if pd.notnull(x) else '')

@@ -29,24 +29,23 @@ def create_intraday_chart(intraday_data, event_date_obj, news_time_str, parsed_d
     
     if pd.notna(news_time_str) and str(news_time_str).strip() != '':
         try:
-            # Anchor to parsed_date (Event US Date) or today if missing
-            row_date = parsed_date if parsed_date else datetime.now().date()
-            
-            # Parse time string
-            time_part = pd.to_datetime(str(news_time_str), format='%H:%M', errors='coerce').time()
-            # If format failed, maybe try parsing full date string? 
-            # The original code used pd.to_datetime(str(ts_val), format='%H:%M').
-            # We stick to original logic for compatibility.
-            
-            if time_part:
-                naive_dt = datetime.combine(row_date, time_part)
+            # Parse timestamp (handles both "14:30" CSV format and full datetime from BigQuery)
+            ts_obj = pd.to_datetime(str(news_time_str), errors='coerce')
+
+            if pd.notna(ts_obj):
                 eastern = pytz.timezone('America/New_York')
-                us_dt = eastern.localize(naive_dt)
                 jst = pytz.timezone('Asia/Tokyo')
+
+                # Always use article's published date + time from timestamp
+                # The timestamp column only contains TIME info, but BigQuery may add today's date
+                # So we extract TIME from ts_obj and combine with the article's actual published DATE
+                row_date = parsed_date if parsed_date else datetime.now().date()
+                naive_dt = datetime.combine(row_date, ts_obj.time())
+
+                us_dt = eastern.localize(naive_dt)
                 converted_jst = us_dt.astimezone(jst)
                 # Make Naive for Altair
-                converted_jst_naive = converted_jst.replace(tzinfo=None)
-                news_dt_jst = converted_jst_naive
+                news_dt_jst = converted_jst.replace(tzinfo=None)
         except Exception as e:
             pass
 

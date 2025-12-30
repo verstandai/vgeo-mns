@@ -71,13 +71,20 @@ def render_news_card(index, row, manager):
     ts_val = row.get('timestamp')
     if pd.notna(ts_val) and str(ts_val).strip() != '':
         try:
-            ts_obj = pd.to_datetime(str(ts_val), format='%H:%M', errors='coerce')
+            # Parse timestamp (handles both "14:30" CSV format and full datetime from BigQuery)
+            ts_obj = pd.to_datetime(str(ts_val), errors='coerce')
+
             if pd.notna(ts_obj):
-                curr_date = datetime.now().date() 
-                naive_dt = datetime.combine(curr_date, ts_obj.time())
                 eastern = pytz.timezone('America/New_York')
-                est_dt = eastern.localize(naive_dt)
                 jst = pytz.timezone('Asia/Tokyo')
+
+                # Always use article's published date + time from timestamp
+                # The timestamp column only contains TIME info, but BigQuery may add today's date
+                # So we extract TIME from ts_obj and combine with the article's actual published DATE
+                article_date = pd.to_datetime(row.get('parsed_date')).date()
+                naive_dt = datetime.combine(article_date, ts_obj.time())
+
+                est_dt = eastern.localize(naive_dt)
                 jst_dt = est_dt.astimezone(jst)
                 
                 est_str = est_dt.strftime('%I:%M %p')
@@ -289,14 +296,14 @@ def render_news_card(index, row, manager):
                             row.get('timestamp'),
                             row.get('parsed_date')
                         )
-                        st.altair_chart(chart_h, use_container_width=True)
+                        st.altair_chart(chart_h, width="stretch")
                      else:
                         st.info("Hourly data not available (limited to last 730 days).")
 
                 with t2:
                     if has_daily:
                         chart_d = charts.create_daily_chart(market_data)
-                        st.altair_chart(chart_d, use_container_width=True)
+                        st.altair_chart(chart_d, width="stretch")
                     else:
                         st.info("Daily chart data unavailable.")
         

@@ -4,12 +4,16 @@ from datetime import timedelta
 
 def render_sidebar(df, manager, data_path):
     """Renders the sidebar filters and returns the filtered dataframe and selected ticker."""
-    st.sidebar.title("MNS News Analysis")
-    st.sidebar.markdown("---")
 
     if df.empty:
         st.error(f"No data found. Path: {os.path.abspath(data_path)} (CWD: {os.getcwd()})")
         st.stop()
+        
+    st.sidebar.markdown("---")
+    
+    st.sidebar.title("MNS News Analysis")    
+    
+    st.sidebar.markdown("---")
 
     # --- Global Search ---
     search_query = st.sidebar.text_input("🔍 Global Search", placeholder="Headline, description, key_takeaways, reasoning, ticker...")
@@ -158,6 +162,15 @@ def render_sidebar(df, manager, data_path):
     # Duplicate Filter
     hide_duplicates = st.sidebar.checkbox("Hide User-Flagged Duplicates", value=True)
     # TODO: Implement actual filtering based on feedback_log.csv
+
+    st.sidebar.markdown("---")
+    
+    # --- Centered Refresh Button ---
+    _ , col2, _ = st.sidebar.columns([0.5, 2, 0.5])
+    with col2:
+        if st.button("🔄 Refresh Data", help="Clear cache and reload data from BigQuery/CSV", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
 
     return view_df, selected_ticker
 
