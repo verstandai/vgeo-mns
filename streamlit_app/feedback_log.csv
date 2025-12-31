@@ -1,2 +1,6 @@
-news_id,ticker,date,headline,user_sentiment_correction,user_significance_correction,source_useful,event_correlation_correction,is_duplicate,is_recap,notes,timestamp
-15,RNECY,10/30/25,"[Earnings Flash Report] Renesas Elec: 3Q cumulative pre-tax -49,243 million.",Correct,Correct,Yes,Correct,False,True,,2025-12-05T12:37:37.395272
+news_id,ticker,date,headline,user_sentiment_correction,user_significance_correction,source_useful,event_correlation_correction,is_duplicate,is_recap,linked_original_id,notes,timestamp
+275,TM,2025-12-11,"Toyota Industries continues to rise for 4 consecutive days, US Elliott's over 5% stake revealed◇",Correct,Correct,Yes,Correct,False,True,278,,2025-12-30T19:30:52.256833
+277,TM,2025-12-10,"[Analyst Forecast] Toyota Motor, FY26 March ordinary profit forecast. Up 2.2% from previous week.",Correct,Correct,Yes,Correct,False,True,283,,2025-12-30T20:01:37.806426
+278,TM,2025-12-10,"Toyota, Aisin and others are high, observation of investment fund rotation into highly currency-sensitive auto-related stocks due to rapid yen depreciation◇",Correct,Correct,Yes,Correct,False,True,283,,2025-12-30T20:02:25.840714
+281,TM,2025-12-05,"[Analyst Forecast] Toyota Motor Corporation, FY26/3 ordinary profit forecast. Up 0.6% from previous week.",Correct,Correct,Yes,Correct,False,True,283,,2025-12-30T20:06:16.109255
+282,TM,2025-12-05,"[Analyst Rating] Toyota Motor Corporation, Strong rating continued, target price raised to 3,700 yen (Major Japanese Securities Firm)",Correct,Correct,Yes,Correct,False,True,283,,2025-12-30T20:06:45.251594

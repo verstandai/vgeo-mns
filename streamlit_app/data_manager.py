@@ -4,25 +4,19 @@ import os
 import json
 import numpy as np
 from datetime import datetime, timedelta
-from google.cloud import bigquery  # NEW
-from dotenv import load_dotenv  # NEW
+from google.cloud import bigquery 
+from dotenv import load_dotenv  
+
 
 load_dotenv()
 
 class DataManager:
-    # def __init__(self, data_path, feedback_path):
-    #     self.data_path = data_path
-    #     self.feedback_path = feedback_path
-    #     self.market_data_cache = {}
-        
-    #     # Initialize Favorites
-    #     self.favorites_file = os.path.join(os.path.dirname(__file__), 'favorites.json')
-    #     self.favorites = self.load_favorites()
     
     def __init__(self, data_path, feedback_path):
         self.data_path = data_path
         self.feedback_path = feedback_path
         self.market_data_cache = {}
+        self.full_df = pd.DataFrame() # Store full dataset for cross-referencing
         
         # Initialize Favorites
         self.favorites_file = os.path.join(os.path.dirname(__file__), 'favorites.json')
@@ -40,37 +34,6 @@ class DataManager:
             print(f"✅ BigQuery mode enabled: {self.project_id}.{self.dataset_id}.{self.table_id}")
         else:
             print(f"📁 CSV mode enabled: {self.data_path}")
-
-    # def load_data(self):
-    #     """Loads the CSV data."""
-    #     if not os.path.exists(self.data_path):
-    #         return pd.DataFrame()
-        
-    #     # 1. Load Raw Data
-    #     df = pd.read_csv(self.data_path)
-        
-    #     # 2. Parse Dates (Handle 11-Nov -> 2025-11-11)
-    #     def parse_date(d):
-    #         if pd.isna(d): return pd.NaT
-    #         s = str(d).strip()
-    #         # Try MM/DD/YY (Old)
-    #         try: return datetime.strptime(s, '%m/%d/%y').date()
-    #         except: pass
-    #         # Try DD-Mon -> Assume 2025
-    #         try: return datetime.strptime(f"{s}-2025", '%d-%b-%Y').date()
-    #         except: pass
-    #         return pd.NaT
-
-    #     df['parsed_date'] = df['date'].apply(parse_date)
-        
-    #     # 3. Convert 'date' column to desired '11/17/2025' string format
-    #     df['date'] = df['parsed_date'].apply(lambda x: x.strftime('%m/%d/%Y') if pd.notnull(x) else '')
-
-    #     # Sort by Date (Desc)
-    #     if 'parsed_date' in df.columns:
-    #         df = df.sort_values(by=['parsed_date'], ascending=False)
-
-    #     return df
 
     def load_data(self):
         """Loads data from BigQuery or CSV based on USE_BIGQUERY environment variable."""
@@ -133,6 +96,7 @@ class DataManager:
         if 'parsed_date' in df.columns:
             df = df.sort_values(by=['parsed_date'], ascending=False)
 
+        self.full_df = df # Store for later use
         return df
 
     def load_favorites(self):
@@ -625,15 +589,39 @@ class DataManager:
         self.market_data_cache[key] = metrics
         return metrics
 
+    def load_feedback_df(self):
+        """Returns the feedback log as a DataFrame."""
+        if not os.path.exists(self.feedback_path):
+            return pd.DataFrame()
+        try:
+            return pd.read_csv(self.feedback_path)
+        except Exception as e:
+            print(f"Error loading feedback: {e}")
+            return pd.DataFrame()
+
     def save_feedback(self, feedback_data):
         """
-        Appends feedback to the CSV log.
+        Appends feedback to the CSV log with a strict column order.
         feedback_data: dict
         """
         # Add timestamp
         feedback_data['timestamp'] = datetime.now().isoformat()
         
+        # Enforce strict column order to prevent "Unexpected fields" errors
+        cols = [
+            'news_id', 'ticker', 'date', 'headline', 
+            'user_sentiment_correction', 'user_significance_correction', 
+            'source_useful', 'event_correlation_correction', 
+            'is_duplicate', 'is_recap', 'linked_original_id', 
+            'notes', 'timestamp'
+        ]
+        
+        # Create DF with fixed columns (fills missing with NaN)
         df = pd.DataFrame([feedback_data])
+        for c in cols:
+            if c not in df.columns:
+                df[c] = None
+        df = df[cols]
         
         if not os.path.exists(self.feedback_path):
             df.to_csv(self.feedback_path, index=False)
