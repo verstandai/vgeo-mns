@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 from data_manager import DataManager
-from modules import render_cards, render_filters
+from modules import render_cards, render_filters, feedback
 
 # --- Configuration ---
 PAGE_TITLE = "MNS | Sentiment Validation"
@@ -78,50 +78,7 @@ def main():
     
     # 2. Layer on Feedback (Recap Linkages, etc.)
     feedback_df = manager.load_feedback_df()
-    df = raw_df.copy()
-    
-    # Store recap relationships: {original_id: [list_of_recap_ids]}
-    recap_tree = {} 
-    # Store user overrides: {news_id: {'recap_status': 'RECAP', 'sentiment': 0.5}}
-    user_overrides = {}
-
-    if not feedback_df.empty and 'news_id' in feedback_df.columns:
-        # Get latest feedback per story
-        latest_fb = feedback_df.sort_values('timestamp').groupby('news_id').tail(1)
-        
-        for _, fb in latest_fb.iterrows():
-            nid = fb['news_id']
-            user_overrides[nid] = {
-                'is_recap': fb.get('is_recap', False),
-                'linked_original_id': fb.get('linked_original_id')
-            }
-            
-            # If this is linked to an original, add it to the tree
-            orig_id = fb.get('linked_original_id')
-            if pd.notna(orig_id) and orig_id != "None":
-                orig_id = int(float(orig_id))
-                if orig_id not in recap_tree: recap_tree[orig_id] = []
-                recap_tree[orig_id].append(nid)
-
-    # Apply overrides to the dataframe
-    def apply_overrides(row):
-        oid = row.name
-        if oid in user_overrides:
-            info = user_overrides[oid]
-            if info['is_recap']:
-                row['breaking_recap'] = 'Recap'
-            row['linked_original_id'] = info['linked_original_id']
-        else:
-            row['linked_original_id'] = None
-        
-        # --- Auto-Boost Significance ---
-        # If this story has children recaps, it's definitely significant!
-        if oid in recap_tree and len(recap_tree[oid]) > 0:
-            row['classification'] = 'SIGNIFICANT'
-            
-        return row
-
-    df = df.apply(apply_overrides, axis=1)
+    df, recap_tree = feedback.apply_feedback_overrides(raw_df.copy(), feedback_df)
 
     # Render the sidebar and get the selected ticker (filtered data)
     view_df, selected_ticker = render_filters.render_sidebar(df, manager, DATA_PATH)

@@ -153,6 +153,9 @@ def render_sidebar(df, manager, data_path):
 
     st.sidebar.markdown("---")
 
+    # --- CONTENT CURATION FILTERS ---
+    st.sidebar.markdown("### Content Curation")
+
     # Breaking/Recap Filter
     show_only_breaking = st.sidebar.checkbox("Show Only Breaking Events", value=False)
     if show_only_breaking:
@@ -162,16 +165,18 @@ def render_sidebar(df, manager, data_path):
     show_only_significant = st.sidebar.checkbox("Show Only Significant Events", value=True)
     if show_only_significant:
         view_df = view_df[view_df['classification'].str.upper() == 'SIGNIFICANT']
-
+    
     # News Lifecycle Filters
-    hide_linked_recaps = st.sidebar.checkbox("Hide Linked Recaps (Stacked)", value=True, help="Hide articles that have been manually linked to a parent story to declutter the timeline.")
+    hide_linked_recaps = st.sidebar.checkbox("Hide Manual Recaps", value=True, help="Hide articles that have been manually linked to a parent story to declutter the timeline.")
     if hide_linked_recaps:
         # We check if the row HAS a valid linked_original_id
         # Note: linked_original_id is None-equivalent if not linked with other articles
-        view_df = view_df[view_df['linked_original_id'].isna() | (view_df['linked_original_id'] == 'None')]
+        view_df = view_df[view_df['linked_original_id'].isna() | (view_df['linked_original_id'] == 'None') | (view_df['linked_original_id'] == '')]
 
-    # Duplicate Filter (May be redundant with linked recaps and deprecated)
-    hide_duplicates = st.sidebar.checkbox("Hide User-Flagged Duplicates", value=True)
+    # Duplicate Filter
+    hide_duplicates = st.sidebar.checkbox("Hide Archived / Duplicates", value=True, help="Hide items marked as duplicate via the quick-archive (trash) button.")
+    if hide_duplicates:
+        view_df = view_df[view_df['is_duplicate_user'] == False]
 
     st.sidebar.markdown("---")
     

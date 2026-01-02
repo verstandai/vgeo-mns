@@ -106,8 +106,8 @@ def render_news_card(index, row, manager, children_recaps=None):
 
     with st.container():
         # News Header Row
-        # Card (Left, Large) | Button (Right, Small)
-        c_head, c_fav = st.columns([20, 1])
+        # Card (Left, Large) | Buttons (Right, Small)
+        c_head, c_archive, c_fav = st.columns([20, 1, 1])
         
         with c_head:
             # Recap Link Logic (For the Recap Story)
@@ -195,6 +195,39 @@ def render_news_card(index, row, manager, children_recaps=None):
             if 'search_matches' in row and row['search_matches']:
                  matches_str = " | ".join(row['search_matches'])
                  st.markdown(f"<div style='font-size: 0.75rem; color: #888; margin-top: -8px; margin-bottom: 8px;'>🔍 Matches in: {matches_str}</div>", unsafe_allow_html=True)
+
+        with c_archive:
+            is_dup = row.get('is_duplicate_user', False)
+            archive_icon = "♻️" if is_dup else "🗑️"
+            archive_help = "Restore from Archive" if is_dup else "Mark as Duplicate / Archive"
+            
+            if st.button(f"{archive_icon}", key=f"archive_btn_{index}", help=archive_help):
+                # Quick archive logic: Toggle the duplicate flag
+                # Get existing feedback for this item to preserve other fields
+                existing_fb = {}
+                feedback_df = manager.load_feedback_df()
+                if not feedback_df.empty and 'news_id' in feedback_df.columns:
+                    match = feedback_df[feedback_df['news_id'] == index].tail(1)
+                    if not match.empty:
+                        existing_fb = match.iloc[0].to_dict()
+
+                # Basic feedback entry
+                feedback_entry = {
+                    "news_id": index,
+                    "ticker": row['us_ticker_name'],
+                    "date": row['parsed_date'],
+                    "headline": row['headline'],
+                    "user_sentiment_correction": existing_fb.get('user_sentiment_correction', "Correct"),
+                    "user_significance_correction": existing_fb.get('user_significance_correction', "Correct"),
+                    "source_useful": existing_fb.get('source_useful', "Yes"),
+                    "event_correlation_correction": existing_fb.get('event_correlation_correction', "Correct"),
+                    "is_duplicate": not is_dup, # TOGGLE
+                    "is_recap": existing_fb.get('is_recap', False),
+                    "linked_original_id": existing_fb.get('linked_original_id', None),
+                    "notes": existing_fb.get('notes', "")
+                }
+                manager.save_feedback(feedback_entry)
+                st.rerun()
 
         with c_fav:
             if st.button(f"{fav_icon}", key=f"fav_btn_{index}", help="Toggle Favorite"):
@@ -342,8 +375,8 @@ def render_news_card(index, row, manager, children_recaps=None):
         has_daily = market_data and 'chart_data' in market_data and market_data['chart_data'] is not None
         has_hourly = market_data and market_data.get('intraday_data') is not None and not market_data['intraday_data'].empty
         
-        if (has_daily or has_hourly):
-            with st.expander("Price Trend Analysis", expanded=False):
+        with st.expander("Price Trend Analysis", expanded=False):
+            if (has_daily or has_hourly):
                 # Swap order: Hourly First
                 t1, t2 = st.tabs(["Hourly (T-1 to T+1)", "Daily (T-30 to T+15)"])
                 
@@ -365,17 +398,24 @@ def render_news_card(index, row, manager, children_recaps=None):
                         st.altair_chart(chart_d, width="stretch")
                     else:
                         st.info("Daily chart data unavailable.")
+            else:
+                st.info("Market data unavailable for this date range.")
         
         # Model Reasoning Expander
         with st.expander("Model Reasoning", expanded=False):
             if pd.notna(row.get('actionable_intelligence')):
-                st.expander("Actionable Intelligence", expanded=True).markdown(row['actionable_intelligence'])
+                st.markdown("##### Actionable Intelligence")
+                st.markdown(row['actionable_intelligence'])
+                st.markdown("---")
 
             if pd.notna(row.get('breaking_recap_reasoning')):
-                st.expander("Breaking Recap Reasoning", expanded=True).markdown(row['breaking_recap_reasoning'])
+                st.markdown("##### Breaking Recap Reasoning")
+                st.markdown(row['breaking_recap_reasoning'])
+                st.markdown("---")
 
             if pd.notna(row.get('news_worthy_reasoning')):
-                st.expander("News-worthy Reasoning", expanded=True).markdown(row['news_worthy_reasoning'])
+                st.markdown("##### News-worthy Reasoning")
+                st.markdown(row['news_worthy_reasoning'])
 
         # Feedback / Model Validation Form
         with st.expander("Model Validation", expanded=False):
@@ -412,7 +452,6 @@ def render_news_card(index, row, manager, children_recaps=None):
                     final_sig = "SIGNIFICANT" if sig_option == "HIGH" else "INSIGNIFICANT"
 
             st.caption("Additional Feedback")
-            f_dup = st.checkbox("Mark this news as a duplicate", key=f"dup_{index}")
             f_recap = st.checkbox("Mark this news as a recap story", key=f"recap_{index}")
             
             linked_original_id = None
@@ -501,7 +540,7 @@ def render_news_card(index, row, manager, children_recaps=None):
                     "user_significance_correction": final_sig if sig_correct == "No" else "Correct",
                     "source_useful": source_useful,
                     "event_correlation_correction": final_corr,
-                    "is_duplicate": f_dup,
+                    "is_duplicate": row.get('is_duplicate_user', False),
                     "is_recap": f_recap,
                     "linked_original_id": linked_original_id,
                     "notes": f_notes
